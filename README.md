@@ -5,6 +5,7 @@ This Python package contains 'standalone' implementations of the Backfeed protoc
 
 ## Installation
 
+    git clone https://github.com/Backfeed/backfeed-protocol.git
     python setup.py install
 
 For development:
