@@ -1,4 +1,4 @@
-from peewee import SqliteDatabase 
+from peewee import SqliteDatabase
 
 
 database = SqliteDatabase(':memory:')
@@ -12,4 +12,3 @@ def initialize_database():
     db_tables = [User, Evaluation, Contribution]
     database.connect()
     database.create_tables(db_tables, safe=True)
-

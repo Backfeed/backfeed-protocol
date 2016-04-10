@@ -119,7 +119,7 @@ class BaseContract(object):
                     e.user.save()
 
     def sum_equally_voted_reputation(self, evaluation):
-        """return the sum of reputation of evaluators of evaluation.contribution that 
+        """return the sum of reputation of evaluators of evaluation.contribution that
         have evaluated the same value"""
         contribution = evaluation.contribution
         equallyVotedRep = sum(e.user.reputation for e in contribution.evaluations.filter(value=evaluation.value))
@@ -147,7 +147,7 @@ class BaseContract(object):
                 rewardBase = currentScore - max_score
             elif currentScore > self.REWARD_THRESHOLD:
                 rewardBase = currentScore
-            contribution.max_score=currentScore
+            contribution.max_score = currentScore
             contribution.save()
         if rewardBase > 0:
             # calc token reward by score/score_delta * tokenRewardFactor

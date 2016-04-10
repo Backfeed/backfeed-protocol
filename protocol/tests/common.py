@@ -5,8 +5,10 @@ from ..models.user import User
 from ..models.evaluation import Evaluation
 from ..models.contribution import Contribution
 
-# make peewee not 
+
 peewee_logger = logging.getLogger('peewee')
+
+
 class TestCase(unittest.TestCase):
     """Base class for all tests"""
     db_tables = [User, Evaluation, Contribution]

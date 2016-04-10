@@ -3,24 +3,35 @@ Backfeed Protocols
 
 This Python package contains 'standalone' implementations of the Backfeed protocols.
 
-## Installation
+## Running the tests
 
-You need setuptools installed for this to work
+You can run the tests in a sandboxed environment using tox:
+
+    sudo apt-get install python-tox
 
     git clone https://github.com/Backfeed/backfeed-protocol.git
     cd backfeed-protocol
-    python setup.py install
-
-For development:
-
-    python setup.py develop
-
-## Running tests
-
-    python setup.py test
+    tox
 
 
-# Usage
+## Installation
+
+You need pip installed
+
+    sudo apt-get install python-pip
+
+You can now either directly install from the github repository:
+
+     pip install git+https://github.com/Backfeed/backfeed-protocol.git
+
+or install from your local copy
+
+    git clone https://github.com/Backfeed/backfeed-protocol.git
+    cd backfeed-protocol
+    pip install . 
+
+
+##  Usage
 
 Once you have the package installed, you can use it like this:
 
@@ -58,4 +69,6 @@ Once you have the package installed, you can use it like this:
     54.45069613049415
     >>> ann.reputation
     14.545069613049415
+
+## Contributing
 

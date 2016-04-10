@@ -1,4 +1,4 @@
-from peewee import *
+from peewee import FloatField, Model
 
 from ..settings import database
 

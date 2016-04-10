@@ -1,4 +1,4 @@
-from peewee import *
+from peewee import ForeignKeyField, FloatField, Model
 from ..settings import database
 from user import User
 from contribution import Contribution

@@ -8,3 +8,7 @@
 /*.egg-infobuild/
 build/
 backfeed_protocol.egg-info/
+.cache/
+.coverage
+.tox/
+files.txt

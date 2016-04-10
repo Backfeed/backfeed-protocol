@@ -20,8 +20,8 @@ class BaseContractTestCase(TestCase):
 
     def get_fresh_contract(self):
         """get a contract with default settings but without users or other data"""
-        # TODO: this resets all db tables - we should really just reset the contract data
-        self.reset_db()  
+        # TODO: this resets all db tables - we should really just reset the contract dat
+        self.reset_db()
         return self.contract_class_to_test()
 
 

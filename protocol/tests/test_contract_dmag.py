@@ -27,7 +27,7 @@ class DmagTest(BaseContractTestCase):
 
         reputation_at_stake: the reputation of the evaluator
 
-        note that in the DMAG implementation, the evaluation fee depends 
+        note that in the DMAG implementation, the evaluation fee depends
         exclusively on the (relative) repuation of the evaluator
 
         """
@@ -114,7 +114,7 @@ class DmagTest(BaseContractTestCase):
         """return
 
         upvoted_repution is the amount of repution in upvotes
-        returns (token_reward, reputation_reward) 
+        returns (token_reward, reputation_reward)
         """
         contract = self.get_fresh_contract()
         contributor = contract.add_user(reputation=0.0)

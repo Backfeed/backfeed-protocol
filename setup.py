@@ -10,9 +10,7 @@ setup(
     license='GPL',
     packages=['protocol'],
     install_requires=[
-        'peewee==2.8.0',
+        'peewe',
     ],
     zip_safe=False,
-    test_suite='nose.collector',
-    tests_require=['nose'],
 )
