@@ -1,5 +1,7 @@
-Backfeed BaseContract Implementation
+Backfeed Protocols 
 --------------------------------
+
+This Python package contains 'standalone' implementations of the Backfeed protocols.
 
 ## Installation
 
@@ -13,3 +15,7 @@ For development:
 
     python setup.py test
 
+
+# Usage
+
+...
