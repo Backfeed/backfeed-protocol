@@ -10,7 +10,7 @@ setup(
     license='GPL',
     packages=['protocol'],
     install_requires=[
-        'peewe',
+        'peewee',
     ],
     zip_safe=False,
 )
