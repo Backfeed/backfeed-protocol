@@ -3,17 +3,6 @@ Backfeed Protocols
 
 This Python package contains 'standalone' implementations of the Backfeed protocols.
 
-## Running the tests
-
-You can run the tests in a sandboxed environment using tox:
-
-    sudo apt-get install python-tox
-
-    git clone https://github.com/Backfeed/backfeed-protocol.git
-    cd backfeed-protocol
-    tox
-
-
 ## Installation
 
 You need pip installed
@@ -29,6 +18,20 @@ or install from your local copy
     git clone https://github.com/Backfeed/backfeed-protocol.git
     cd backfeed-protocol
     pip install . 
+
+## Running the tests
+
+You can run the tests in a sandboxed environment using tox:
+
+    pip install tox
+
+    git clone https://github.com/Backfeed/backfeed-protocol.git
+    cd backfeed-protocol
+    tox
+
+or, if you want to run individual tests:
+
+    py.test path/to/your/testfile.py
 
 
 ##  Usage
@@ -72,3 +75,4 @@ Once you have the package installed, you can use it like this:
 
 ## Contributing
 
+See [../CONTRIBUTING.md](CONTRIBUTING.md)
