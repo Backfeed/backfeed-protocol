@@ -1,5 +1,8 @@
 from setuptools import setup
 
+requires = [
+    'peewee',
+]
 setup(
     name='backfeed-protocol',
     version='0.1',
@@ -9,8 +12,8 @@ setup(
     author_email='jelle@gerbrandy.com',
     license='GPL',
     packages=['protocol'],
-    install_requires=[
-        'peewee',
-    ],
+    install_requires=requires,
     zip_safe=False,
+    test_suite='protocol',
+    tests_require=requires,
 )
