@@ -49,21 +49,21 @@ Once you have the package installed, you can use it like this:
     >>> contract = DMagContract()
     
     >>> # add two users
-    >>> ann  = contract.add_user(tokens=10, reputation=10) 
-    >>> bonnie = contract.add_user(tokens=99, reputation=100)
+    >>> ann  = contract.create_user(tokens=10, reputation=10) 
+    >>> bonnie = contract.create_user(tokens=99, reputation=100)
     >>> ann.reputation
     10
     >>> ann.tokens
     10
     
     >>> # ann makes a contribution
-    >>> contribution = contract.add_contribution(user=ann)
+    >>> contribution = contract.create_contribution(user=ann)
     >>> # In the DmagContract, this will have cost Ann 1 token
     >>> ann.tokens
     9
     
     >>> # bonnie now evaluates the contribution of ann
-    >>> evaluation = contract.add_evaluation(contribution=contribution, user=bonnie, value=1)
+    >>> evaluation = contract.create_evaluation(contribution=contribution, user=bonnie, value=1)
     >>> # bonnie pays a reputation fee to make the evaluation
     >>> bonnie.reputation
     99.90692517849118

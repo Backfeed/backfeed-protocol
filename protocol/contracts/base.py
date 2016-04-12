@@ -24,7 +24,7 @@ class BaseContract(object):
     def __init__(self):
         pass
 
-    def add_user(self, tokens=None, reputation=None):
+    def create_user(self, tokens=None, reputation=None):
         """create a new user with default values"""
         if tokens is None:
             tokens = self.USER_INITIAL_TOKENS
@@ -43,7 +43,7 @@ class BaseContract(object):
     def delete_users(self):
         User.delete().execute()
 
-    def add_contribution(self, user):
+    def create_contribution(self, user):
         # the user pays the fee for the contribution
         if user.tokens < self.CONTRIBUTION_FEE:
             msg = 'User does not have enough tokens to pay the contribution fee.'
@@ -60,7 +60,7 @@ class BaseContract(object):
     def get_contributions(self):
         return Contribution.select()
 
-    def add_evaluation(self, user, contribution, value):
+    def create_evaluation(self, user, contribution, value):
         evaluation = Evaluation(user=user, contribution=contribution, value=value)
 
         # disactivate any previous evaluations by this user
