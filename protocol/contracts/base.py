@@ -40,6 +40,19 @@ class BaseContract(object):
     def get_user(self, user_id):
         return User.get(id=user_id)
 
+    def update_user(self, user_id, tokens=None, reputation=None):
+        user = User.get(id=user_id)
+        if tokens is not None:
+            user.tokens = tokens
+        if reputation is not None:
+            user.reputation = reputation
+        user.save()
+        return user
+
+    def delete_user(self, user_id):
+        user = User.get(id=user_id)
+        user.delete_instance()
+
     def delete_users(self):
         User.delete().execute()
 
@@ -56,6 +69,9 @@ class BaseContract(object):
 
     def get_contribution(self, contribution_id):
         return Contribution.get(id=contribution_id)
+
+    def delete_contribution(self, contribution_id):
+        return Contribution.get(id=contribution_id).delete_instance()
 
     def get_contributions(self):
         return Contribution.select()
@@ -80,6 +96,9 @@ class BaseContract(object):
         evaluation.save()
 
         return evaluation
+
+    def get_evaluation(self, evaluation_id):
+        return Evaluation.get(id=evaluation_id)
 
     def pay_evaluation_fee(self, evaluation):
         """calculate the fee for the evaluator of this evaluation
