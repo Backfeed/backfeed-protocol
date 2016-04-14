@@ -1,5 +1,6 @@
-Backfeed Protocols 
+Backfeed Protocols  [![Build Status](https://travis-ci.org/Backfeed/backfeed-protocol.svg?branch=master)](https://travis-ci.org/Backfeed/backfeed-protocol)
 --------------------------------
+
 
 This Python package contains 'standalone' implementations of the Backfeed protocols.
 
