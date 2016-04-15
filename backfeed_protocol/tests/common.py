@@ -1,7 +1,7 @@
 import logging
 import unittest
 from ..settings import database
-from protocol import utils
+from backfeed_protocol import utils
 
 
 peewee_logger = logging.getLogger('peewee')

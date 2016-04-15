@@ -1,6 +1,6 @@
 import unittest
-import protocol
-from protocol.contracts.dmag import DMagContract
+import backfeed_protocol
+from ..contracts.dmag import DMagContract
 
 
 class GetContractTestCase(unittest.TestCase):
@@ -8,5 +8,5 @@ class GetContractTestCase(unittest.TestCase):
 
     def test_get_contract(self):
 
-        contract = protocol.get_contract()
+        contract = backfeed_protocol.get_contract()
         self.assertTrue(isinstance(contract, DMagContract))

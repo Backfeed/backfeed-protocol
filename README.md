@@ -42,11 +42,11 @@ Once you have the package installed, you can use it like this:
     python
     >>> # set up a database
     >>> # (with the default settings, this is a in-memory sqllite database)
-    >>> from protocol import utils
+    >>> from backfeed_protocol import utils
     >>> utils.setup_database()
     
     >>> # create a DMagContract
-    >>> from protocol.contracts.dmag import DMagContract
+    >>> from backfeed_protocol.contracts.dmag import DMagContract
     >>> contract = DMagContract()
     
     >>> # add two users

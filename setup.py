@@ -11,9 +11,9 @@ setup(
     author='Jelle Gerbrandy',
     author_email='jelle@gerbrandy.com',
     license='GPL',
-    packages=['protocol'],
+    packages=['backfeed_protocol'],
     install_requires=requires,
     zip_safe=False,
-    test_suite='protocol',
+    test_suite='backfeed_protocol',
     tests_require=requires,
 )

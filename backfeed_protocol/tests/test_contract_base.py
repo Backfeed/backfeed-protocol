@@ -2,8 +2,8 @@ import types
 
 from common import TestCase
 
-from protocol.contracts.base import BaseContract
-from protocol import utils
+from ..contracts.base import BaseContract
+from .. import utils
 
 
 class BaseContractTestCase(TestCase):

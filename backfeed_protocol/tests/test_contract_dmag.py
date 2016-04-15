@@ -1,5 +1,5 @@
-from protocol.contracts.dmag import DMagContract
-from protocol.models.evaluation import Evaluation
+from ..contracts.dmag import DMagContract
+from ..models.evaluation import Evaluation
 
 from test_contract_base import BaseContractTestCase
 
