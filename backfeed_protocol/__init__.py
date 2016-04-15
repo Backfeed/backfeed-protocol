@@ -1,7 +1,7 @@
 from contracts.dmag import DMagContract
 
 
-def get_contract(name=None):
+def get_contract(name=None, sqllite_file=None):
     """return the contract identified by name
 
     returns a Contract instance

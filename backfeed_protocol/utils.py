@@ -1,9 +1,10 @@
-def setup_database():
+def setup_database(sqlite_file=':memory:'):
     from settings import database
     from models.user import User
     from models.contribution import Contribution
     from models.evaluation import Evaluation
 
+    database.init(sqlite_file)
     database.connect()
     database.create_tables([User, Contribution, Evaluation], safe=True)
 

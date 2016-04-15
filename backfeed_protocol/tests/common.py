@@ -14,7 +14,7 @@ class TestCase(unittest.TestCase):
         # make peewee a bit more quiet
         peewee_logger.setLevel(logging.ERROR)
         # set up the database
-        utils.setup_database()
+        utils.setup_database(sqlite_file=':memory:')
 
     def tearDown(self):
         # reset the database

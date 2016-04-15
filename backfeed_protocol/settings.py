@@ -1,4 +1,4 @@
 from peewee import SqliteDatabase
 
 
-database = SqliteDatabase(':memory:')
+database = SqliteDatabase(None)
