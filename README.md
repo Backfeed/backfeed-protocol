@@ -30,6 +30,10 @@ You can run the tests in a sandboxed environment using tox:
     cd backfeed-protocol
     tox
 
+or, if you just want to run the tests, without the syntax checks:
+
+     python setup.py test
+
 or, if you want to run individual tests:
 
     py.test path/to/your/testfile.py
