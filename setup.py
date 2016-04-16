@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 requires = [
     'peewee',
@@ -11,7 +11,8 @@ setup(
     author='Jelle Gerbrandy',
     author_email='jelle@gerbrandy.com',
     license='GPL',
-    packages=['backfeed_protocol'],
+    packages=find_packages(),
+    include_package_data=True,
     install_requires=requires,
     zip_safe=False,
     test_suite='backfeed_protocol',

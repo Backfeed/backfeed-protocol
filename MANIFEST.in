@@ -1,1 +1,2 @@
-include README.md
+include *.txt *.ini *.cfg *.rst *.md
+recursive-include restapi backfeed_protocol *.ico *.png *.css *.gif *.jpg *.pt *.txt *.mak *.mako *.js *.html *.xml
