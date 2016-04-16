@@ -1,4 +1,3 @@
-from contracts.dmag import DMagContract
 
 
 def get_contract(name=None, sqllite_file=None):
@@ -8,4 +7,5 @@ def get_contract(name=None, sqllite_file=None):
 
     TODO: for now, this functino returns a DMagContract()
     """
+    from contracts.dmag import DMagContract
     return DMagContract()

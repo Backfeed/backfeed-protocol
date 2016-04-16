@@ -9,6 +9,11 @@ def setup_database(sqlite_file=':memory:'):
     database.create_tables([User, Contribution, Evaluation], safe=True)
 
 
+def init_database(sqlite_file):
+    from settings import database
+    database.init(sqlite_file)
+
+
 def reset_database():
     """delete all data from the database"""
     from .models.contribution import Contribution
