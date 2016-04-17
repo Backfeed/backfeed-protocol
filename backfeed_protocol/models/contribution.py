@@ -1,4 +1,5 @@
-from peewee import ForeignKeyField, FloatField, Model
+from datetime import datetime
+from peewee import ForeignKeyField, FloatField, Model, DateTimeField
 from user import User
 from ..settings import database
 
@@ -9,7 +10,8 @@ class Contribution(Model):
     # max_score: it a a memo field
     max_score = FloatField(default=0)
 
-    # TODO: add timestamp
+    # the time that this object was added
+    time = DateTimeField(default=datetime.now())
 
     class Meta:
         database = database

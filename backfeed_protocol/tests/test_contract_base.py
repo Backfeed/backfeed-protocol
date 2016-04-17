@@ -1,4 +1,5 @@
 import types
+import datetime
 
 from common import TestCase
 
@@ -68,5 +69,30 @@ class ContractSanityTest(BaseContractTestCase):
 
     def test_get_contribution(self):
         user = self.contract.create_user()
-        contribution1 = self.contract.create_contribution(user=user)
-        self.assertEqual(self.contract.get_contribution(contribution1), contribution1)
+        contribution_id = self.contract.create_contribution(user=user).id
+        contribution = self.contract.get_contribution(contribution_id=contribution_id)
+
+        self.assertEqual(contribution.id, contribution_id)
+        self.assertEqual(contribution.user, user)
+        self.assertTrue(isinstance(contribution.time, datetime.datetime))
+
+    def test_get_user(self):
+        user_id = self.contract.create_user().id
+        user = self.contract.get_user(user_id=user_id)
+
+        self.assertEqual(user.id, user_id)
+        self.assertTrue(isinstance(user.time, datetime.datetime))
+
+    def test_get_evaluation(self):
+        user = self.contract.create_user()
+        contribution = self.contract.create_contribution(user=user)
+        value = 3.14
+        evaluation_id = self.contract.create_evaluation(contribution=contribution, user=user, value=value).id
+
+        evaluation = self.contract.get_evaluation(evaluation_id)
+
+        self.assertEqual(evaluation.id, evaluation_id)
+        self.assertEqual(evaluation.user, user)
+        self.assertEqual(evaluation.contribution, contribution)
+        self.assertEqual(evaluation.value, value)
+        self.assertTrue(isinstance(evaluation.time, datetime.datetime))
