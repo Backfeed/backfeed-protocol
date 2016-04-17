@@ -11,7 +11,8 @@ def setup_database(sqlite_file=':memory:'):
 
 def init_database(sqlite_file):
     from settings import database
-    database.init(sqlite_file)
+    if database.database != sqlite_file:
+        database.init(sqlite_file)
 
 
 def reset_database():
