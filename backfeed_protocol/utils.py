@@ -4,14 +4,17 @@ def setup_database(sqlite_file=':memory:'):
     from models.contribution import Contribution
     from models.evaluation import Evaluation
 
-    database.init(sqlite_file)
+    if database.database != sqlite_file:
+        database.init(sqlite_file)
     database.connect()
     database.create_tables([User, Contribution, Evaluation], safe=True)
 
 
 def init_database(sqlite_file):
     from settings import database
-    database.init(sqlite_file)
+    if database.database != sqlite_file:
+        database.init(sqlite_file)
+    return database
 
 
 def reset_database():
