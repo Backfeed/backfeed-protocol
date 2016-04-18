@@ -3,9 +3,10 @@ from __future__ import division  # do division with floating point arithmetic
 from ..models.user import User
 from ..models.contribution import Contribution
 from ..models.evaluation import Evaluation
+from ..models.contract import Contract
 
 
-class BaseContract(object):
+class BaseContract(Contract):
     """The BaseContract class defines functions common to all protocols.
     """
     ALPHA = 0.7
@@ -21,9 +22,6 @@ class BaseContract(object):
     USER_INITIAL_TOKENS = 50.0
     USER_INITIAL_REPUTATION = 20.0
 
-    def __init__(self):
-        pass
-
     def create_user(self, tokens=None, reputation=None):
         """create a new user with default values"""
         if tokens is None:
@@ -34,50 +32,19 @@ class BaseContract(object):
         new_user.save()
         return new_user
 
-    def get_users(self):
-        return User.select()
-
-    def get_user(self, user_id):
-        return User.get(id=user_id)
-
-    def update_user(self, user_id, tokens=None, reputation=None):
-        user = User.get(id=user_id)
-        if tokens is not None:
-            user.tokens = tokens
-        if reputation is not None:
-            user.reputation = reputation
-        user.save()
-        return user
-
-    def delete_user(self, user_id):
-        user = User.get(id=user_id)
-        user.delete_instance()
-
-    def delete_users(self):
-        User.delete().execute()
-
     def create_contribution(self, user):
         # the user pays the fee for the contribution
         if user.tokens < self.CONTRIBUTION_FEE:
             msg = 'User does not have enough tokens to pay the contribution fee.'
             raise Exception(msg)
         user.tokens = user.tokens - self.CONTRIBUTION_FEE
-        new_contribution = Contribution(user=user)
+        new_contribution = Contribution(contract=self, user=user)
         new_contribution.save()
         user.save()
         return new_contribution
 
-    def get_contribution(self, contribution_id):
-        return Contribution.get(id=contribution_id)
-
-    def delete_contribution(self, contribution_id):
-        return Contribution.get(id=contribution_id).delete_instance()
-
-    def get_contributions(self):
-        return Contribution.select()
-
     def create_evaluation(self, user, contribution, value):
-        evaluation = Evaluation(user=user, contribution=contribution, value=value)
+        evaluation = Evaluation(contract=self, user=user, contribution=contribution, value=value)
 
         # disactivate any previous evaluations by this user
         for previous_evaluation in evaluation.contribution.evaluations.filter(user=user):
@@ -110,7 +77,7 @@ class BaseContract(object):
 
         # currentVotersLogical <- previousVotersLogical | (1:length(users$reputation) == evaluatorInd) ; # logical indexing of voters including current evaluator
         #  votedRep <- sum(users$reputation[currentVotersLogical]) ;
-        votedRep = user.reputation + contribution.committed_reputation
+        votedRep = user.reputation + contribution.engaged_reputation()
         # 'stakeFee'
         #   x <- 1 - (votedRep/totalRep)^beta ;
         #  return(currentEvaluatorRep * x);
@@ -144,6 +111,11 @@ class BaseContract(object):
         equallyVotedRep = sum(e.user.reputation for e in contribution.evaluations.filter(value=evaluation.value))
         return equallyVotedRep
 
+    def contribution_score(self, contribution):
+        upVotedRep = sum(e.user.reputation for e in contribution.evaluations if e.value == 1)
+        score = upVotedRep / self.total_reputation
+        return score
+
     def reward_contributor(self, evaluation):
         # don't reward anything if the value is 0/
         if evaluation.value == 0:
@@ -151,9 +123,7 @@ class BaseContract(object):
         contribution = evaluation.contribution
         contributor = evaluation.contribution.user
         rewardBase = 0
-        upVotedRep = sum(e.user.reputation for e in contribution.evaluations if e.value == 1)
-
-        currentScore = upVotedRep / self.total_reputation
+        currentScore = self.contribution_score(contribution)
 
         # TODO:
         # I think to keep track of 'already payed out rewards'
@@ -180,7 +150,33 @@ class BaseContract(object):
     def get_evaluations(self):
         return Evaluation.select()
 
-    @property
-    def total_reputation(self):
-        """return the total reputation of all users in this contract"""
-        return sum([user.reputation for user in self.get_users()])
+    def get_users(self):
+        return User.select()
+
+    def get_user(self, user_id):
+        return User.get(id=user_id)
+
+    # def update_user(self, user_id, tokens=None, reputation=None):
+    #     user = User.get(id=user_id)
+    #     if tokens is not None:
+    #         user.tokens = tokens
+    #     if reputation is not None:
+    #         user.reputation = reputation
+    #     user.save()
+    #     return user
+
+    # def delete_user(self, user_id):
+    #     user = User.get(id=user_id)
+    #     user.delete_instance()
+
+    # def delete_users(self):
+    #     User.delete().execute()
+
+    def get_contribution(self, contribution_id):
+        return Contribution.get(id=contribution_id)
+
+    # def delete_contribution(self, contribution_id):
+    #     return Contribution.get(id=contribution_id).delete_instance()
+
+    def get_contributions(self):
+        return Contribution.select()

@@ -1,6 +1,6 @@
 
 
-def get_contract(name=None, sqllite_file=None):
+def get_contract(name=None):
     """return the contract identified by name
 
     returns a Contract instance
@@ -8,4 +8,10 @@ def get_contract(name=None, sqllite_file=None):
     TODO: for now, this functino returns a DMagContract()
     """
     from contracts.dmag import DMagContract
-    return DMagContract()
+
+    try:
+        contract = DMagContract().get(id=1)
+    except:
+        contract = DMagContract()
+        contract.save()
+    return contract

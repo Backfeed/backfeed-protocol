@@ -1,12 +1,14 @@
-import unittest
 import backfeed_protocol
 from ..contracts.dmag import DMagContract
+from common import TestCase
 
 
-class GetContractTestCase(unittest.TestCase):
+class GetContractTestCase(TestCase):
     """tests for protocol.get_contract"""
 
     def test_get_contract(self):
 
         contract = backfeed_protocol.get_contract()
         self.assertTrue(isinstance(contract, DMagContract))
+        contract2 = backfeed_protocol.get_contract()
+        self.assertEqual(contract, contract2)

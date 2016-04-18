@@ -23,7 +23,9 @@ class BaseContractTestCase(TestCase):
     def get_fresh_contract(self):
         """get a contract with default settings but without users or other data"""
         utils.reset_database()
-        return self.contract_class_to_test()
+        contract = self.contract_class_to_test()
+        contract.save()
+        return contract
 
 
 class ContractSanityTest(BaseContractTestCase):
@@ -60,12 +62,12 @@ class ContractSanityTest(BaseContractTestCase):
         self.assertEqual(evaluation1.contribution, contribution1)
         self.assertEqual(evaluation1.value, value)
 
-    def test_delete_users(self):
-        self.contract.create_user()
-        self.contract.create_user()
-        self.assertEqual(self.contract.get_users().count(), 2)
-        self.contract.delete_users()
-        self.assertEqual(self.contract.get_users().count(), 0)
+    # def test_delete_users(self):
+    #     self.contract.create_user()
+    #     self.contract.create_user()
+    #     self.assertEqual(self.contract.get_users().count(), 2)
+    #     self.contract.delete_users()
+    #     self.assertEqual(self.contract.get_users().count(), 0)
 
     def test_get_contribution(self):
         user = self.contract.create_user()

@@ -116,7 +116,7 @@ class DmagTest(BaseContractTestCase):
         contract.create_user(reputation=total_reputation - upvoted_reputation)
         contribution = contract.create_contribution(user=contributor)
         contribution.user.tokens = 0
-        evaluation = Evaluation(contribution=contribution, user=evaluator, value=1)
+        evaluation = Evaluation(contract=contract, contribution=contribution, user=evaluator, value=1)
         evaluation.save()
         contract.reward_contributor(evaluation)
 
