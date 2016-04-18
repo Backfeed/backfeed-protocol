@@ -20,6 +20,7 @@ class BaseContract(Contract):
     TOKEN_REWARD_FACTOR = 50
     USER_INITIAL_TOKENS = 50.0
     USER_INITIAL_REPUTATION = 20.0
+    EVALUATION_SET = [0, 1]  # the allowed values for votes, in case of an infinite set, need to change the function "is_evaluation_value_allowed".
 
     def create_user(self, tokens=None, reputation=None):
         """create a new user with default values"""
@@ -42,7 +43,14 @@ class BaseContract(Contract):
         user.save()
         return new_contribution
 
+    def is_evaluation_value_allowed(self, value):
+        return value in self.EVALUATION_SET  # need to modify in the case of continuous evaluations
+
     def create_evaluation(self, user, contribution, value):
+        if not self.is_evaluation_value_allowed(value):
+            msg = 'Evaluation value not recognized'
+            raise Exception(msg)
+
         evaluation = Evaluation(contract=self, user=user, contribution=contribution, value=value)
 
         # disactivate any previous evaluations by this user

@@ -88,7 +88,7 @@ class ContractSanityTest(BaseContractTestCase):
     def test_get_evaluation(self):
         user = self.contract.create_user()
         contribution = self.contract.create_contribution(user=user)
-        value = 3.14
+        value = 1
         evaluation_id = self.contract.create_evaluation(contribution=contribution, user=user, value=value).id
 
         evaluation = self.contract.get_evaluation(evaluation_id)
