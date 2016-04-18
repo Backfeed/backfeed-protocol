@@ -11,7 +11,6 @@ class BaseContract(object):
     ALPHA = 0.7
     BETA = 0.5
     CONTRIBUTION_FEE = 1
-    DURATION = 86400000
     DISTRIBUTION_STAKE = 0.08  # stake distribution factor
     GAMMA = 0.5
     REPUTATION_REWARD_FACTOR = 5
@@ -108,7 +107,7 @@ class BaseContract(object):
         user = evaluation.user
         contribution = evaluation.contribution
 
-        # currentVotersLogical <- previousVotersLogical | (1:length(users$reputation) == evaluatorInd) ; # logical indexing of voters including current evaluator
+        # currentVotersLogical <- previousVotersLogical | (1:length( users$reputation) == evaluatorInd) ; # logical indexing of voters including current evaluator
         #  votedRep <- sum(users$reputation[currentVotersLogical]) ;
         votedRep = user.reputation + contribution.committed_reputation
         # 'stakeFee'
