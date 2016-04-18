@@ -197,11 +197,11 @@ class DmagTest(BaseContractTestCase):
         """test if our results match the R simulation"""
         contract = self.contract
         # add some users and contributions
-        user1 = contract.create_user()
-        user2 = contract.create_user()
-        user3 = contract.create_user()
-        user4 = contract.create_user()
-        user5 = contract.create_user()
+        user1 = contract.create_user(50, 20)
+        user2 = contract.create_user(50, 20)
+        user3 = contract.create_user(50, 20)
+        user4 = contract.create_user(50, 20)
+        user5 = contract.create_user(50, 20)
 
         # users get default values from the protocol
         self.assertEqual(user1.reputation, 20)
@@ -212,14 +212,14 @@ class DmagTest(BaseContractTestCase):
         contribution2 = contract.create_contribution(user3)
 
         # a contribution has a fee of 1 token
-        self.assertEqual(user2.tokens, 49)
-        self.assertEqual(user3.tokens, 49)
+        self.assertEqual(user2.tokens, 50 - contract.CONTRIBUTION_FEE)
+        self.assertEqual(user3.tokens, 50 - contract.CONTRIBUTION_FEE)
 
         # we now expect the following distibution of tokens and reputation
         expected_state = {
             user1.id: {"reputation": 20, "tokens": 50},
-            user2.id: {"reputation": 20, "tokens": 49},
-            user3.id: {"reputation": 20, "tokens": 49},
+            user2.id: {"reputation": 20, "tokens": 50 - contract.CONTRIBUTION_FEE},
+            user3.id: {"reputation": 20, "tokens": 50 - contract.CONTRIBUTION_FEE},
             user4.id: {"reputation": 20, "tokens": 50},
             user5.id: {"reputation": 20, "tokens": 50}
         }
@@ -236,8 +236,8 @@ class DmagTest(BaseContractTestCase):
         self.assertEqual(user2.reputation, 20)
         expected_state = {
             user1: {"reputation": 19.7788854382, "tokens": 50},
-            user2: {"reputation": 20, "tokens": 49},
-            user3: {"reputation": 20, "tokens": 49},
+            user2: {"reputation": 20, "tokens": 50 - contract.CONTRIBUTION_FEE},
+            user3: {"reputation": 20, "tokens": 50 - contract.CONTRIBUTION_FEE},
             user4: {"reputation": 20, "tokens": 50},
             user5: {"reputation": 20, "tokens": 50}
         }
