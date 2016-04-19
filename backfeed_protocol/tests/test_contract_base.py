@@ -49,6 +49,7 @@ class ContractSanityTest(BaseContractTestCase):
 
         # user1 makes a contribution
         contribution1 = contract.create_contribution(user=user1)
+        contribution2 = contract.create_contribution(user=user2)
 
         # we can retrieve the contribution from the contract
         self.assertEqual(contract.get_contributions(), [contribution1])
@@ -61,6 +62,11 @@ class ContractSanityTest(BaseContractTestCase):
         self.assertEqual(evaluation1.user, user1)
         self.assertEqual(evaluation1.contribution, contribution1)
         self.assertEqual(evaluation1.value, value)
+
+        contract.create_evaluation(user1, contribution2, value=1)
+        contract.create_evaluation(user2, contribution2, value=0)
+
+        self.assertRaises(ValueError, contract.create_evaluation, user2, contribution1, value=3.14)
 
     # def test_delete_users(self):
     #     self.contract.create_user()

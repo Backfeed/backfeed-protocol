@@ -49,7 +49,7 @@ class BaseContract(Contract):
     def create_evaluation(self, user, contribution, value):
         if not self.is_evaluation_value_allowed(value):
             msg = 'Evaluation value not recognized'
-            raise Exception(msg)
+            raise ValueError(msg)
 
         evaluation = Evaluation(contract=self, user=user, contribution=contribution, value=value)
 
