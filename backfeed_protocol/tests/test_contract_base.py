@@ -51,6 +51,10 @@ class ContractSanityTest(BaseContractTestCase):
         contribution1 = contract.create_contribution(user=user1)
         contribution2 = contract.create_contribution(user=user2)
 
+        # test contribution type and error
+        contract.create_contribution(user=user1, contribution_type='base')
+        self.assertRaises(KeyError, contract.create_contribution, user2, contribution_type='spam')
+
         # we can retrieve the contribution from the contract
         self.assertEqual(contract.get_contributions(), [contribution1])
 

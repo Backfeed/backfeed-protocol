@@ -9,18 +9,19 @@ from ..models.contract import Contract
 class BaseContract(Contract):
     """The BaseContract class defines functions common to all protocols.
     """
-    ALPHA = 0.7
-    BETA = 0.5
-    CONTRIBUTION_FEE = 1
-    DISTRIBUTION_STAKE = 0.08  # stake distribution factor
-    GAMMA = 0.5
-    REPUTATION_REWARD_FACTOR = 5
-    REWARD_THRESHOLD = 0.5  # rewardScoreThreshold
-    STAKE = 0.02  # reputation stake multiplier
-    TOKEN_REWARD_FACTOR = 50
     USER_INITIAL_TOKENS = 50.0
     USER_INITIAL_REPUTATION = 20.0
-    EVALUATION_SET = [0, 1]  # the allowed values for votes, in case of an infinite set, need to change the function "is_evaluation_value_allowed".
+    ALPHA = 0.7
+    BETA = 0.5
+    CONTRIBUTION_TYPE = {'base': {
+        'fee': 1,
+        'distribution_stake': 0.08,
+        'reputation_reward_factor': 5,
+        'reward_threshold': 0.5,
+        'stake': 0.02,
+        'token_reward_factor': 50,
+        'evaluation_set': [0, 1]}  # the allowed values for votes, in case of an infinite set, need to change the function "is_evaluation_value_allowed".
+    }
 
     def create_user(self, tokens=None, reputation=None):
         """create a new user with default values"""
@@ -32,22 +33,25 @@ class BaseContract(Contract):
         new_user.save()
         return new_user
 
-    def create_contribution(self, user):
+    def create_contribution(self, user, contribution_type='base'):
+        if contribution_type not in self.CONTRIBUTION_TYPE:
+            msg = 'contribution_type "{contribution_type}" is not valid'.format(contribution_type=contribution_type)
+            raise KeyError(msg)
         # the user pays the fee for the contribution
-        if user.tokens < self.CONTRIBUTION_FEE:
+        if user.tokens < self.CONTRIBUTION_TYPE[contribution_type]['fee']:
             msg = 'User does not have enough tokens to pay the contribution fee.'
             raise Exception(msg)
-        user.tokens = user.tokens - self.CONTRIBUTION_FEE
-        new_contribution = Contribution(contract=self, user=user)
+        user.tokens = user.tokens - self.CONTRIBUTION_TYPE[contribution_type]['fee']
+        new_contribution = Contribution(contract=self, user=user, contribution_type=contribution_type)
         new_contribution.save()
         user.save()
         return new_contribution
 
-    def is_evaluation_value_allowed(self, value):
-        return value in self.EVALUATION_SET  # need to modify in the case of continuous evaluations
+    def is_evaluation_value_allowed(self, value, contribution_type='base'):
+        return value in self.CONTRIBUTION_TYPE[contribution_type]['evaluation_set']  # need to modify in the case of continuous evaluations
 
     def create_evaluation(self, user, contribution, value):
-        if not self.is_evaluation_value_allowed(value):
+        if not self.is_evaluation_value_allowed(value, contribution.contribution_type):
             msg = 'Evaluation value not recognized'
             raise ValueError(msg)
 
@@ -90,7 +94,7 @@ class BaseContract(Contract):
         #  return(currentEvaluatorRep * x);
         stakeFee = user.reputation * (1 - ((votedRep / self.total_reputation) ** self.BETA))
 
-        fee = self.STAKE * stakeFee
+        fee = self.CONTRIBUTION_TYPE[contribution.contribution_type]['stake'] * stakeFee
         evaluation.user.reputation -= fee
         evaluation.user.save()
 
@@ -108,7 +112,7 @@ class BaseContract(Contract):
             for e in contribution.evaluations:
                 if e.value == evaluation.value:
                     e.user.reputation *= 1 + \
-                        (self.DISTRIBUTION_STAKE * stake_distribution * burn_factor)
+                        (self.CONTRIBUTION_TYPE[contribution.contribution_type]['distribution_stake'] * stake_distribution * burn_factor)
                     e.user.save()
 
     def sum_equally_voted_reputation(self, evaluation):
@@ -139,17 +143,17 @@ class BaseContract(Contract):
 
         max_score = evaluation.contribution.max_score
         if currentScore > max_score:
-            if max_score >= self.REWARD_THRESHOLD:
+            if max_score >= self.CONTRIBUTION_TYPE[contribution.contribution_type]['reward_threshold']:
                 rewardBase = currentScore - max_score
-            elif currentScore > self.REWARD_THRESHOLD:
+            elif currentScore > self.CONTRIBUTION_TYPE[contribution.contribution_type]['reward_threshold']:
                 rewardBase = currentScore
             contribution.max_score = currentScore
             contribution.save()
         if rewardBase > 0:
             # calc token reward by score/score_delta * tokenRewardFactor
-            tokenReward = self.TOKEN_REWARD_FACTOR * rewardBase
+            tokenReward = self.CONTRIBUTION_TYPE[contribution.contribution_type]['token_reward_factor'] * rewardBase
             # calc token reward by score/score_delta * reputationRewardFactor
-            reputationReward = self.REPUTATION_REWARD_FACTOR * rewardBase
+            reputationReward = self.CONTRIBUTION_TYPE[contribution.contribution_type]['reputation_reward_factor'] * rewardBase
             contributor.tokens = contributor.tokens + tokenReward
             contributor.reputation = contributor.reputation + reputationReward
             contributor.save()

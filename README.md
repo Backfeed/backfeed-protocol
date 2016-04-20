@@ -18,7 +18,7 @@ or install from your local copy
 
     git clone https://github.com/Backfeed/backfeed-protocol.git
     cd backfeed-protocol
-    pip install . 
+    pip install .
 
 ## Running the tests
 
@@ -48,27 +48,27 @@ Once you have the package installed, you can use it like this:
     >>> # (with the default settings, this is a in-memory sqlite database)
     >>> from backfeed_protocol import utils
     >>> utils.setup_database()
-    
+
     >>> # create a DMagContract
     >>> from backfeed_protocol.contracts.dmag import DMagContract
     >>> contract = DMagContract()
     >>> contract.save()
     1
-    
+
     >>> # add two users
-    >>> ann  = contract.create_user(tokens=10, reputation=10) 
+    >>> ann  = contract.create_user(tokens=10, reputation=10)
     >>> bonnie = contract.create_user(tokens=99, reputation=100)
     >>> ann.reputation
     10
     >>> ann.tokens
     10
-    
+
     >>> # ann makes a contribution
-    >>> contribution = contract.create_contribution(user=ann)
+    >>> contribution = contract.create_contribution(user=ann,contribution_type='article')
     >>> # In the DmagContract, this will have cost Ann 1 token
     >>> ann.tokens
     9
-    
+
     >>> # bonnie now evaluates the contribution of ann
     >>> evaluation = contract.create_evaluation(contribution=contribution, user=bonnie, value=1)
     >>> # bonnie pays a reputation fee to make the evaluation

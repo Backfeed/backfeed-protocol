@@ -1,5 +1,5 @@
 from datetime import datetime
-from peewee import ForeignKeyField, FloatField, Model, DateTimeField
+from peewee import ForeignKeyField, FloatField, Model, DateTimeField, CharField
 from user import User
 from contract import Contract
 from ..settings import database
@@ -14,6 +14,9 @@ class Contribution(Model):
 
     # the time that this object was added
     time = DateTimeField(default=datetime.now())
+
+    # contribution type
+    contribution_type = CharField()
 
     class Meta:
         database = database
