@@ -52,7 +52,7 @@ class BaseContract(Contract):
 
     def create_evaluation(self, user, contribution, value):
         if not self.is_evaluation_value_allowed(value, contribution.contribution_type):
-            msg = 'Evaluation value not recognized'
+            msg = 'Evaluation value "{value}" is not valid'.format(value=value)
             raise ValueError(msg)
 
         evaluation = Evaluation(contract=self, user=user, contribution=contribution, value=value)
@@ -158,8 +158,13 @@ class BaseContract(Contract):
             contributor.reputation = contributor.reputation + reputationReward
             contributor.save()
 
-    def get_evaluations(self):
-        return Evaluation.select()
+    def get_evaluations(self, contribution_id=None, contributor_id=None):
+        qry = Evaluation.select()
+        if contribution_id:
+            qry = qry.where(Evaluation.contribution == contribution_id)
+        if contributor_id:
+            qry = qry.where(Evaluation.user == contributor_id)
+        return qry
 
     def get_users(self):
         return User.select()
@@ -167,27 +172,8 @@ class BaseContract(Contract):
     def get_user(self, user_id):
         return User.get(id=user_id)
 
-    # def update_user(self, user_id, tokens=None, reputation=None):
-    #     user = User.get(id=user_id)
-    #     if tokens is not None:
-    #         user.tokens = tokens
-    #     if reputation is not None:
-    #         user.reputation = reputation
-    #     user.save()
-    #     return user
-
-    # def delete_user(self, user_id):
-    #     user = User.get(id=user_id)
-    #     user.delete_instance()
-
-    # def delete_users(self):
-    #     User.delete().execute()
-
     def get_contribution(self, contribution_id):
         return Contribution.get(id=contribution_id)
-
-    # def delete_contribution(self, contribution_id):
-    #     return Contribution.get(id=contribution_id).delete_instance()
 
     def get_contributions(self):
         return Contribution.select()
