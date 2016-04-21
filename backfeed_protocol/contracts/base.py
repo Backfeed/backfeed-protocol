@@ -13,6 +13,9 @@ class BaseContract(Contract):
     USER_INITIAL_REPUTATION = 20.0
     ALPHA = 0.7
     BETA = 0.5
+    REFERRAL_REWARD_FRACTION = 0.2
+    REFERRAL_TIMEFRAME = 30  # in days
+
     CONTRIBUTION_TYPE = {'base': {
         'fee': 1,
         'distribution_stake': 0.08,
@@ -23,7 +26,7 @@ class BaseContract(Contract):
         'evaluation_set': [0, 1]}  # the allowed values for votes, in case of an infinite set, need to change the function "is_evaluation_value_allowed".
     }
 
-    def create_user(self, tokens=None, reputation=None):
+    def create_user(self, tokens=None, reputation=None, referrer_id=''):
         """create a new user with default values"""
         if tokens is None:
             tokens = self.USER_INITIAL_TOKENS
