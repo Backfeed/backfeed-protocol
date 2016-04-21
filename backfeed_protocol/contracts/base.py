@@ -39,7 +39,14 @@ class BaseContract(Contract):
         new_user.save()
         return new_user
 
-    def create_contribution(self, user, contribution_type='base'):
+    def create_contribution(self, user, contribution_type=None):
+        if not contribution_type:
+            # as a default, we use the first contribution type that is
+            # first in alphanumeric ordering. We might want to make this 
+            # configurable.
+            contribution_types = self.CONTRIBUTION_TYPE.keys()
+            contribution_types.sort()
+            contribution_type = contribution_types[0]
         if contribution_type not in self.CONTRIBUTION_TYPE:
             msg = 'contribution_type "{contribution_type}" is not valid'.format(contribution_type=contribution_type)
             raise KeyError(msg)
