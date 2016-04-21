@@ -42,7 +42,7 @@ class BaseContract(Contract):
     def create_contribution(self, user, contribution_type=None):
         if not contribution_type:
             # as a default, we use the first contribution type that is
-            # first in alphanumeric ordering. We might want to make this 
+            # first in alphanumeric ordering. We might want to make this
             # configurable.
             contribution_types = self.CONTRIBUTION_TYPE.keys()
             contribution_types.sort()

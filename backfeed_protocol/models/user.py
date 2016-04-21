@@ -1,5 +1,5 @@
 from datetime import datetime
-from peewee import FloatField, Model, DateTimeField, ForeignKeyField, CharField
+from peewee import FloatField, Model, DateTimeField, ForeignKeyField
 
 
 from ..settings import database
@@ -14,7 +14,7 @@ class User(Model):
     time = DateTimeField(default=datetime.now())
 
     # referral
-    referrer_id = CharField(default='')
+    # referrer_id = CharField(default='')
 
     class Meta:
         database = database
