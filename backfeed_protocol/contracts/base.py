@@ -16,14 +16,17 @@ class BaseContract(Contract):
     REFERRAL_REWARD_FRACTION = 0.2
     REFERRAL_TIMEFRAME = 30  # in days
 
-    CONTRIBUTION_TYPE = {'base': {
-        'fee': 1,
-        'distribution_stake': 0.08,
-        'reputation_reward_factor': 5,
-        'reward_threshold': 0.5,
-        'stake': 0.02,
-        'token_reward_factor': 50,
-        'evaluation_set': [0, 1]}  # the allowed values for votes, in case of an infinite set, need to change the function "is_evaluation_value_allowed".
+    CONTRIBUTION_TYPE = {
+        'base': {
+            'fee': 1,
+            'distribution_stake': 0.08,
+            'reputation_reward_factor': 5,
+            'reward_threshold': 0.5,
+            'stake': 0.02,
+            'token_reward_factor': 50,
+            # the allowed values for votes:
+            'evaluation_set': [0, 1],
+        }
     }
 
     def create_user(self, tokens=None, reputation=None, referrer_id=''):
@@ -138,11 +141,6 @@ class BaseContract(Contract):
         contributor = evaluation.contribution.user
         rewardBase = 0
         currentScore = self.contribution_score(contribution)
-
-        # TODO:
-        # I think to keep track of 'already payed out rewards'
-        # but probably it is better in that case to just count 'the difference'
-        # of the current evaluation
 
         max_score = evaluation.contribution.max_score
         if currentScore > max_score:

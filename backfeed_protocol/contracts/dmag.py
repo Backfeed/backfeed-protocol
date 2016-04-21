@@ -14,7 +14,8 @@ class DMagContract(BaseContract):
             'reward_threshold': 0.5,
             'stake': 0.02,
             'token_reward_factor': 50,
-            'evaluation_set': [0, 1]},
+            'evaluation_set': [0, 1],
+        },
         'comment': {
             'fee': 0.1,
             'distribution_stake': 0.02,
@@ -22,6 +23,6 @@ class DMagContract(BaseContract):
             'reward_threshold': 0.5,
             'stake': 0.005,
             'token_reward_factor': 10,
-            'evaluation_set': [0, 1]
+            'evaluation_set': [0, 1],
         }
     }
