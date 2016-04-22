@@ -31,9 +31,11 @@ class Contribution(Model):
 
         possible_values = self.contract.CONTRIBUTION_TYPE[self.contribution_type]['evaluation_set']
         for value in possible_values:
-            evaluation_stats[value] = {
-                'reputation': sum(evaluation.user.reputation for evaluation in self.evaluations.filter(value=value)),
-            }
+            reputation = sum(evaluation.user.reputation for evaluation in self.evaluations.filter(value=value))
+            if reputation:
+                evaluation_stats[value] = {
+                    'reputation':  reputation
+                }
 
         return {
             'evaluations': evaluation_stats,
