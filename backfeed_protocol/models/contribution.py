@@ -24,3 +24,17 @@ class Contribution(Model):
     def engaged_reputation(self):
         """return the total amount of reputation of users that have voted for this contribution"""
         return sum([evaluation.user.reputation for evaluation in self.evaluations])
+
+    def get_statistics(self):
+        """return information about evaluations, repuation engaged, etc"""
+        evaluation_stats = {}
+
+        possible_values = self.contract.CONTRIBUTION_TYPE[self.contribution_type]['evaluation_set']
+        for value in possible_values:
+            evaluation_stats[value] = {
+                'reputation': sum(evaluation.user.reputation for evaluation in self.evaluations.filter(value=value)),
+            }
+
+        return {
+            'evaluations': evaluation_stats,
+        }
