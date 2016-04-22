@@ -2,6 +2,7 @@ from datetime import datetime
 from peewee import ForeignKeyField, FloatField, Model, DateTimeField, CharField
 from user import User
 from contract import Contract
+from .. import utils
 from ..settings import database
 
 
@@ -25,16 +26,18 @@ class Contribution(Model):
         """return the total amount of reputation of users that have voted for this contribution"""
         return sum([evaluation.user.reputation for evaluation in self.evaluations])
 
+    def get_contract(self):
+        return utils.get_contract(contract_id=self.contract.id)
+
     def get_statistics(self):
         """return information about evaluations, repuation engaged, etc"""
         evaluation_stats = {}
-
-        possible_values = self.contract.CONTRIBUTION_TYPE[self.contribution_type]['evaluation_set']
+        possible_values = self.get_contract().CONTRIBUTION_TYPE[self.contribution_type]['evaluation_set']
         for value in possible_values:
             reputation = sum(evaluation.user.reputation for evaluation in self.evaluations.filter(value=value))
             if reputation:
                 evaluation_stats[value] = {
-                    'reputation':  reputation
+                    'reputation': reputation,
                 }
 
         return {

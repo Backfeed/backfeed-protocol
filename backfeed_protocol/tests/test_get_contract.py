@@ -8,7 +8,7 @@ class GetContractTestCase(TestCase):
 
     def test_get_contract(self):
 
-        contract = backfeed_protocol.get_contract()
+        contract = backfeed_protocol.utils.get_contract()
         self.assertTrue(isinstance(contract, DMagContract))
-        contract2 = backfeed_protocol.get_contract()
+        contract2 = backfeed_protocol.utils.get_contract()
         self.assertEqual(contract, contract2)
