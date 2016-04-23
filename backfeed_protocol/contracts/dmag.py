@@ -2,6 +2,9 @@ from base import BaseContract
 
 
 class DMagContract(BaseContract):
+    __mapper_args__ = {
+        'polymorphic_identity': 'DmagContract'
+    }
     USER_INITIAL_TOKENS = 50.0
     USER_INITIAL_REPUTATION = 20.
     ALPHA = 0.7

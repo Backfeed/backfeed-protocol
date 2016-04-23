@@ -1,22 +1,30 @@
 from datetime import datetime
-from peewee import Model, DateTimeField
 
-from ..settings import database
+from sqlalchemy import Column
+from sqlalchemy import Integer
+from sqlalchemy import DateTime
+from sqlalchemy import String
+from sqlalchemy.orm import relationship
+
+from ..models import Base
 
 
-class Contract(Model):
+class Contract(Base):
+    __tablename__ = 'contract'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
     # the time that this object was added
-    time = DateTimeField(default=datetime.now())
+    time = Column(DateTime, default=datetime.now())
+    users = relationship('User', backref='contract')
+    evaluations = relationship('Evaluation', backref='contract')
+    contributions = relationship('Contribution', backref='contract')
 
-    class Meta:
-        database = database
-        db_table = 'contract'
+    type = Column(String(50))
 
-    def __init__(self):
-        super(Contract, self).__init__()
-        self._meta.db_table = 'contract'
+    __mapper_args__ = {
+        'polymorphic_on': type
+    }
 
-    @property
-    def total_reputation(self):
-        """return the total reputation of all users in this contract"""
-        return sum([user.reputation for user in self.users])
+    def relative_reputation(self):
+        """return the reputation as a fraction of the total reputation"""
+        return self.reputation / self.contract.total_reputation

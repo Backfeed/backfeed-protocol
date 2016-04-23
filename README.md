@@ -1,4 +1,5 @@
-Backfeed Protocols  [![Build Status](https://travis-ci.org/Backfeed/backfeed-protocol.svg?branch=master)](https://travis-ci.org/Backfeed/backfeed-protocol)
+Backfeed Protocols  
+[![Build Status](https://travis-ci.org/Backfeed/backfeed-protocol.svg?branch=master)](https://travis-ci.org/Backfeed/backfeed-protocol)
 --------------------------------
 
 

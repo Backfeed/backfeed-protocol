@@ -1,29 +1,37 @@
 from datetime import datetime
-from peewee import ForeignKeyField, FloatField, Model, DateTimeField, CharField
-from user import User
-from contract import Contract
+from sqlalchemy import Column
+from sqlalchemy import Unicode
+from sqlalchemy import Integer
+from sqlalchemy import Float
+from sqlalchemy import ForeignKey
+from sqlalchemy import DateTime
+from sqlalchemy.orm import relationship
+
+from ..models import Base
 from .. import utils
-from ..settings import database
 
 
-class Contribution(Model):
-    # the user that has made the contribution
-    contract = ForeignKeyField(Contract, related_name='contributions')
-    user = ForeignKeyField(User, related_name='contributions')
-    # max_score: it a a memo field
-    max_score = FloatField(default=0)
-
+class Contribution(Base):
+    __tablename__ = 'contribution'
+    id = Column(Integer, primary_key=True)
     # the time that this object was added
-    time = DateTimeField(default=datetime.now())
+    time = Column(DateTime, default=datetime.now())
+    contribution_type = Column(Unicode(255))
+    contract_id = Column(Integer, ForeignKey('contract.id'))
+    user_id = Column(Integer, ForeignKey('user.id'))
 
-    # contribution type
-    contribution_type = CharField()
+    evaluations = relationship('Evaluation', backref='contribution')
 
-    class Meta:
-        database = database
+    max_score = Column(Float)
 
     def engaged_reputation(self):
         """return the total amount of reputation of users that have voted for this contribution"""
+        # engaged_reputation= DBSession.query(func.sum(User.reputation)).\
+        #     join(Evaluation).\
+        #     filter(Evaluation.user_id==User.id).\
+        #     filter(Evaluation.contribution_id ==self.id).\
+        #     one()[0]
+        # return engaged_reputation
         return sum([evaluation.user.reputation for evaluation in self.evaluations])
 
     def get_contract(self):
@@ -34,7 +42,7 @@ class Contribution(Model):
         evaluation_stats = {}
         possible_values = self.get_contract().CONTRIBUTION_TYPE[self.contribution_type]['evaluation_set']
         for value in possible_values:
-            reputation = sum(evaluation.user.reputation for evaluation in self.evaluations.filter(value=value))
+            reputation = sum(evaluation.user.reputation for evaluation in self.contract.get_evaluations(value=value, contribution_id=self.id))
             if reputation:
                 evaluation_stats[value] = {
                     'reputation': reputation,

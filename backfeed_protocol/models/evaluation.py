@@ -1,19 +1,20 @@
 from datetime import datetime
-from peewee import ForeignKeyField, FloatField, Model, DateTimeField
+from ..models import Base
+from sqlalchemy import Column
+from sqlalchemy import Unicode
+from sqlalchemy import Integer
+from sqlalchemy import Float
+from sqlalchemy import ForeignKey
+from sqlalchemy import DateTime
 
-from ..settings import database
-from user import User
-from contribution import Contribution
-from contract import Contract
 
-
-class Evaluation(Model):
-    contract = ForeignKeyField(Contract, related_name='evaluations')
-    user = ForeignKeyField(User, related_name='evaluations')
-    contribution = ForeignKeyField(Contribution, related_name='evaluations')
-    value = FloatField()
+class Evaluation(Base):
+    __tablename__ = 'evaluation'
+    id = Column(Integer, primary_key=True)
+    contract_id = Column(Integer, ForeignKey('contract.id'))
+    contribution_id = Column(Integer, ForeignKey('contribution.id'))
     # the time that this object was added
-    time = DateTimeField(default=datetime.now())
-
-    class Meta:
-        database = database
+    time = Column(DateTime, default=datetime.now())
+    value = Column(Float)
+    contribution_type = Column(Unicode(255), unique=True)
+    user_id = Column(Integer, ForeignKey('user.id'))

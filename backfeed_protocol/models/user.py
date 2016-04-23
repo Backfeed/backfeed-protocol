@@ -1,24 +1,29 @@
+
 from datetime import datetime
-from peewee import FloatField, Model, DateTimeField, ForeignKeyField
+from sqlalchemy import Column
+from sqlalchemy import Unicode
+from sqlalchemy import Integer
+from sqlalchemy import Float
+from sqlalchemy import ForeignKey
+from sqlalchemy import DateTime
+from sqlalchemy.orm import relationship
+
+from ..models import Base
 
 
-from ..settings import database
-from contract import Contract
+class User(Base):
+    __tablename__ = 'user'
 
-
-class User(Model):
-    contract = ForeignKeyField(Contract, related_name='users')
-    reputation = FloatField()
-    tokens = FloatField()
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    contract_id = Column(Integer, ForeignKey('contract.id'))
+    name = Column(Unicode(255), unique=True)
+    reputation = Column(Float)
+    tokens = Column(Float)
     # the time that this object was added
-    time = DateTimeField(default=datetime.now())
-
-    # referral
-    # referrer_id = CharField(default='')
-
-    class Meta:
-        database = database
+    time = Column(DateTime, default=datetime.now())
+    evaluations = relationship('Evaluation', backref='user')
+    contributions = relationship('Contribution', backref='user')
 
     def relative_reputation(self):
         """return the reputation as a fraction of the total reputation"""
-        return self.reputation / self.contract.total_reputation
+        return self.reputation / self.contract.total_reputation()

@@ -2,9 +2,9 @@ import types
 import datetime
 
 from common import TestCase
-
 from ..contracts.base import BaseContract
 from .. import utils
+from ..models import DBSession
 
 
 class BaseContractTestCase(TestCase):
@@ -24,7 +24,35 @@ class BaseContractTestCase(TestCase):
         """get a contract with default settings but without users or other data"""
         utils.reset_database()
         contract = self.contract_class_to_test()
-        contract.save()
+        DBSession.add(contract)
+        DBSession.flush()
+        return contract
+
+    def get_contract_with_data(self):
+        contract = self.get_fresh_contract()
+
+        user0 = contract.create_user()
+        user1 = contract.create_user()
+        user2 = contract.create_user()
+        user3 = contract.create_user()
+
+        contribution0 = contract.create_contribution(user=user0)
+        contribution1 = contract.create_contribution(user=user0)
+        contribution2 = contract.create_contribution(user=user1)
+
+        contract.create_evaluation(contribution=contribution0, user=user1, value=1)
+        contract.create_evaluation(contribution=contribution0, user=user2, value=1)
+        contract.create_evaluation(contribution=contribution0, user=user3, value=0)
+        contract.create_evaluation(contribution=contribution1, user=user2, value=1)
+        contract.create_evaluation(contribution=contribution1, user=user3, value=1)
+
+        self.contribution0 = contribution0
+        self.contribution1 = contribution1
+        self.contribution2 = contribution2
+        self.user0 = user0
+        self.user1 = user1
+        self.user2 = user2
+        self.user3 = user3
         return contract
 
 
@@ -48,15 +76,14 @@ class ContractSanityTest(BaseContractTestCase):
         self.assertTrue(isinstance(user1.tokens, types.FloatType))
 
         # user1 makes a contribution
+        self.assertEqual(contract.get_contributions(), [])
         contribution1 = contract.create_contribution(user=user1)
+        self.assertEqual(contract.get_contributions(), [contribution1])
         contribution2 = contract.create_contribution(user=user2)
-
-        # test contribution type and error
-        contract.create_contribution(user=user1, contribution_type='base')
-        self.assertRaises(KeyError, contract.create_contribution, user2, contribution_type='spam')
+        self.assertEqual(contract.get_contributions(), [contribution1, contribution2])
 
         # we can retrieve the contribution from the contract
-        self.assertEqual(contract.get_contributions(), [contribution1])
+        self.assertEqual(contract.get_contributions(), [contribution1, contribution2])
 
         # user2 evaluates the contribution
         value = 1.0
@@ -72,39 +99,9 @@ class ContractSanityTest(BaseContractTestCase):
 
         self.assertRaises(ValueError, contract.create_evaluation, user2, contribution1, value=3.14)
 
-    # def test_delete_users(self):
-    #     self.contract.create_user()
-    #     self.contract.create_user()
-    #     self.assertEqual(self.contract.get_users().count(), 2)
-    #     self.contract.delete_users()
-    #     self.assertEqual(self.contract.get_users().count(), 0)
-
-    def test_get_contribution(self):
-        user = self.contract.create_user()
-        contribution_id = self.contract.create_contribution(user=user).id
-        contribution = self.contract.get_contribution(contribution_id=contribution_id)
-
-        self.assertEqual(contribution.id, contribution_id)
-        self.assertEqual(contribution.user, user)
-        self.assertTrue(isinstance(contribution.time, datetime.datetime))
-
     def test_get_user(self):
         user_id = self.contract.create_user().id
         user = self.contract.get_user(user_id=user_id)
 
         self.assertEqual(user.id, user_id)
         self.assertTrue(isinstance(user.time, datetime.datetime))
-
-    def test_get_evaluation(self):
-        user = self.contract.create_user()
-        contribution = self.contract.create_contribution(user=user)
-        value = 1
-        evaluation_id = self.contract.create_evaluation(contribution=contribution, user=user, value=value).id
-
-        evaluation = self.contract.get_evaluation(evaluation_id)
-
-        self.assertEqual(evaluation.id, evaluation_id)
-        self.assertEqual(evaluation.user, user)
-        self.assertEqual(evaluation.contribution, contribution)
-        self.assertEqual(evaluation.value, value)
-        self.assertTrue(isinstance(evaluation.time, datetime.datetime))
