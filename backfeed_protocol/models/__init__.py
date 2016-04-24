@@ -9,10 +9,10 @@ Base = declarative_base()
 def initialize_sql(engine):
     # TODO: set autocommit = False,
     # and implement some proper transaction handling
-    from user import User
-    from contract import Contract
-    from evaluation import Evaluation
-    from contribution import Contribution
+    from user import User  # NOQA
+    from contract import Contract  # NOQA
+    from evaluation import Evaluation  # NOQA
+    from contribution import Contribution  # NOQA
     DBSession.configure(bind=engine, autoflush=True, autocommit=True)
     Base.metadata.bind = engine
     Base.metadata.create_all(engine)

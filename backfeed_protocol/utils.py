@@ -1,8 +1,9 @@
 
 
-def setup_database(settings={
-        'sqlalchemy.url': 'sqlite:///:memory:',
-    }):
+def setup_database(
+        settings={
+            'sqlalchemy.url': 'sqlite:///:memory:',
+        }):
     from models import initialize_sql
     from sqlalchemy import engine_from_config
     engine = engine_from_config(settings, 'sqlalchemy.')
