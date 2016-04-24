@@ -10,7 +10,7 @@ class DMagContract(BaseContract):
     ALPHA = 0.7
     BETA = 0.5
     CONTRIBUTION_TYPE = {
-        'article': {
+        u'article': {
             'fee': 1,
             'distribution_stake': 0.08,
             'reputation_reward_factor': 5,
@@ -19,7 +19,7 @@ class DMagContract(BaseContract):
             'token_reward_factor': 50,
             'evaluation_set': [0, 1],
         },
-        'comment': {
+        u'comment': {
             'fee': 0.1,
             'distribution_stake': 0.02,
             'reputation_reward_factor': 1,

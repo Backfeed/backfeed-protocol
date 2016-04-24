@@ -19,8 +19,8 @@ class DmagTest(BaseContractTestCase):
         contract = self.get_fresh_contract()
         contributor1 = contract.create_user()
         contributor2 = contract.create_user()
-        contract.create_contribution(user=contributor1, contribution_type='article')
-        contract.create_contribution(user=contributor2, contribution_type='comment')
+        contract.create_contribution(user=contributor1, contribution_type=u'article')
+        contract.create_contribution(user=contributor2, contribution_type=u'comment')
         self.assertEqual(contributor1.tokens, contract.USER_INITIAL_TOKENS - contract.CONTRIBUTION_TYPE['article']['fee'])
         self.assertEqual(contributor2.tokens, contract.USER_INITIAL_TOKENS - contract.CONTRIBUTION_TYPE['comment']['fee'])
         self.assertRaises(KeyError, contract.create_contribution, contributor1, contribution_type='spam')
@@ -248,8 +248,8 @@ class DmagTest(BaseContractTestCase):
         self.assertEqual(user1.tokens, 50)
 
         # user2 and 3 make a contribution
-        contribution1 = contract.create_contribution(user2, contribution_type='article')
-        contribution2 = contract.create_contribution(user3, contribution_type='article')
+        contribution1 = contract.create_contribution(user2, contribution_type=u'article')
+        contribution2 = contract.create_contribution(user3, contribution_type=u'article')
 
         # a contribution has a fee of 1 token
         self.assertEqual(user2.tokens, 50 - 1)

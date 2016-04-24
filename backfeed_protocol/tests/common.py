@@ -7,7 +7,7 @@ class TestCase(unittest.TestCase):
 
     def setUp(self):
         # set up the database
-        utils.setup_database(sqlite_file=':memory:')
+        utils.setup_database()
 
     def tearDown(self):
         utils.reset_database()

@@ -22,7 +22,7 @@ class BaseContract(Contract):
     REFERRAL_TIMEFRAME = 30  # in days
 
     CONTRIBUTION_TYPE = {
-        'base': {
+        u'base': {
             'fee': 1,
             'distribution_stake': 0.08,
             'reputation_reward_factor': 5,

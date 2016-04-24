@@ -50,25 +50,22 @@ Once you have the package installed, you can use it like this:
     >>> from backfeed_protocol import utils
     >>> utils.setup_database()
 
-    >>> # create a DMagContract
-    >>> from backfeed_protocol.contracts.dmag import DMagContract
-    >>> contract = DMagContract()
-    >>> contract.save()
-    1
+    >>> # create a contract
+    >>> contract = utils.get_contract('example')
 
     >>> # add two users
     >>> ann  = contract.create_user(tokens=10, reputation=10)
     >>> bonnie = contract.create_user(tokens=99, reputation=100)
     >>> ann.reputation
-    10
+    10.0
     >>> ann.tokens
-    10
+    10.0
 
     >>> # ann makes a contribution
-    >>> contribution = contract.create_contribution(user=ann,contribution_type='article')
-    >>> # In the DmagContract, this will have cost Ann 1 token
+    >>> contribution = contract.create_contribution(user=ann,contribution_type=u'article')
+    >>> # In the Example contract, this will have cost Ann 1 token
     >>> ann.tokens
-    9
+    9.0
 
     >>> # bonnie now evaluates the contribution of ann
     >>> evaluation = contract.create_evaluation(contribution=contribution, user=bonnie, value=1)
