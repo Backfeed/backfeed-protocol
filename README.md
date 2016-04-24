@@ -57,15 +57,15 @@ Once you have the package installed, you can use it like this:
     >>> ann  = contract.create_user(tokens=10, reputation=10)
     >>> bonnie = contract.create_user(tokens=99, reputation=100)
     >>> ann.reputation
-    10.0
+    10
     >>> ann.tokens
-    10.0
+    10
 
     >>> # ann makes a contribution
     >>> contribution = contract.create_contribution(user=ann,contribution_type=u'article')
     >>> # In the Example contract, this will have cost Ann 1 token
     >>> ann.tokens
-    9.0
+    9
 
     >>> # bonnie now evaluates the contribution of ann
     >>> evaluation = contract.create_evaluation(contribution=contribution, user=bonnie, value=1)
