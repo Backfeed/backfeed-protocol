@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from sqlalchemy import Column
 from sqlalchemy import Unicode
 from sqlalchemy import Integer
@@ -8,7 +9,6 @@ from sqlalchemy import DateTime
 from sqlalchemy.orm import relationship
 
 from ..models import Base
-from .. import utils
 
 
 class Contribution(Base):
@@ -35,6 +35,7 @@ class Contribution(Base):
         return sum([evaluation.user.reputation for evaluation in self.evaluations])
 
     def get_contract(self):
+        from .. import utils
         return utils.get_contract(contract_id=self.contract.id)
 
     def get_statistics(self):

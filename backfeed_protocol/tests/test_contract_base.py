@@ -5,6 +5,7 @@ from common import TestCase
 from ..contracts.base import BaseContract
 from .. import utils
 from ..models import DBSession
+from ..models import with_session
 
 
 class BaseContractTestCase(TestCase):
@@ -20,12 +21,12 @@ class BaseContractTestCase(TestCase):
         self.contract = self.get_fresh_contract()
         self.allowedDeviation = 0.00005
 
+    @with_session
     def get_fresh_contract(self):
         """get a contract with default settings but without users or other data"""
         utils.reset_database()
         contract = self.contract_class_to_test()
         DBSession.add(contract)
-        DBSession.flush()
         return contract
 
     def get_contract_with_data(self):

@@ -6,6 +6,7 @@ from ..models.contribution import Contribution
 from ..models.evaluation import Evaluation
 from ..models.contract import Contract
 from ..models import DBSession
+from ..models import with_session
 
 
 class BaseContract(Contract):
@@ -34,6 +35,7 @@ class BaseContract(Contract):
         }
     }
 
+    @with_session
     def create_user(self, tokens=None, reputation=None, referrer_id=''):
         """create a new user with default values"""
         if tokens is None:
@@ -41,11 +43,9 @@ class BaseContract(Contract):
         if reputation is None:
             reputation = self.USER_INITIAL_REPUTATION
         new_user = User(contract=self, reputation=reputation, tokens=tokens)
-        DBSession.add(new_user)
-        DBSession.flush()
-        # DBSession.commit()
         return new_user
 
+    @with_session
     def create_contribution(self, user, contribution_type=None):
         if not contribution_type:
             # as a default, we use the first contribution type that is
@@ -54,22 +54,24 @@ class BaseContract(Contract):
             contribution_types = self.CONTRIBUTION_TYPE.keys()
             contribution_types.sort()
             contribution_type = contribution_types[0]
+
         if contribution_type not in self.CONTRIBUTION_TYPE:
             msg = 'contribution_type "{contribution_type}" is not valid'.format(contribution_type=contribution_type)
             raise KeyError(msg)
+
         # the user pays the fee for the contribution
         if user.tokens < self.CONTRIBUTION_TYPE[contribution_type]['fee']:
             msg = 'User does not have enough tokens to pay the contribution fee.'
             raise Exception(msg)
         user.tokens = user.tokens - self.CONTRIBUTION_TYPE[contribution_type]['fee']
+
         new_contribution = Contribution(contract=self, user=user, contribution_type=contribution_type)
-        DBSession.add(new_contribution)
-        DBSession.flush()
         return new_contribution
 
     def is_evaluation_value_allowed(self, value, contribution_type='base'):
         return value in self.CONTRIBUTION_TYPE[contribution_type]['evaluation_set']  # need to modify in the case of continuous evaluations
 
+    @with_session
     def create_evaluation(self, user, contribution, value):
         if not self.is_evaluation_value_allowed(value, contribution.contribution_type):
             msg = 'Evaluation value "{value}" is not valid'.format(value=value)
@@ -84,7 +86,6 @@ class BaseContract(Contract):
             DBSession.delete(previous_evaluation)
 
         evaluation = Evaluation(contract=self, user=user, contribution=contribution, value=value)
-        DBSession.add(evaluation)
         #  have the user has to pay his fees to make the evaluation
         self.pay_evaluation_fee(evaluation)
 
@@ -92,7 +93,6 @@ class BaseContract(Contract):
         self.reward_previous_evaluators(evaluation)
 
         self.reward_contributor(evaluation)
-        DBSession.add(evaluation)
 
         return evaluation
 

@@ -1,6 +1,5 @@
 from ..contracts.dmag import DMagContract
 from ..models.evaluation import Evaluation
-from ..models import DBSession
 
 from test_contract_base import BaseContractTestCase
 
@@ -132,7 +131,6 @@ class DmagTest(BaseContractTestCase):
         contribution = contract.create_contribution(user=contributor, contribution_type='article')
         contribution.user.tokens = 0
         evaluation = Evaluation(contract=contract, contribution=contribution, user=evaluator, value=1)
-        DBSession.add(evaluation)
         contract.reward_contributor(evaluation)
 
         reputation_reward = evaluation.contribution.user.reputation
@@ -181,15 +179,6 @@ class DmagTest(BaseContractTestCase):
         contributor.reputation = 0
         contributor.tokens = 0
 
-        # hack for syncing (TOD)
-        DBSession.add(contributor)
-        # DBSession.add(evaluator1)
-        # DBSession.add(evaluator2)
-        # DBSession.add(contributor)
-        # evaluator1.save()
-        # evaluator2.save()
-        # evaluator3.save()
-        # extra_user.save()
         contribution.evaluations[0].user = evaluator1
         contribution.user = contributor
         # sanity test
@@ -346,6 +335,7 @@ class DmagTest(BaseContractTestCase):
             # TODO: these are the simulation results
             # user2: {"reputation": 22.7586, "tokens": 78.9576},
             user2: {"reputation": 22.7716, "tokens": 79.08672},
+            user2: {"reputation": 22.8198, "tokens": 79.0968},
             user3: {"reputation": 20.2785, "tokens": 50 - 1},
             user4: {"reputation": 20.2009, "tokens": 50},
             user5: {"reputation": 19.8526, "tokens": 50}
