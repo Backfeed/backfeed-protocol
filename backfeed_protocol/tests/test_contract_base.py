@@ -86,6 +86,9 @@ class ContractSanityTest(BaseContractTestCase):
         # we can retrieve the contribution from the contract
         self.assertEqual(contract.get_contributions(), [contribution1, contribution2])
 
+        # test token_fund initially equal to the contribution fee
+        self.assertEqual(contribution1.token_fund, contract.CONTRIBUTION_TYPE[contribution1.contribution_type]['fee'])
+
         # user2 evaluates the contribution
         value = 1.0
         evaluation1 = contract.create_evaluation(user1, contribution1, value=value)

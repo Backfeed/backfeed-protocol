@@ -24,6 +24,8 @@ class Contribution(Base):
 
     max_score = Column(Float)
 
+    token_fund = Column(Float)
+
     def engaged_reputation(self):
         """return the total amount of reputation of users that have voted for this contribution"""
         return sum([evaluation.user.reputation for evaluation in self.evaluations])

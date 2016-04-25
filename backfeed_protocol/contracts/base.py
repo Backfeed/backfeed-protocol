@@ -22,6 +22,7 @@ class BaseContract(Contract):
     BETA = 0.5
     REFERRAL_REWARD_FRACTION = 0.2
     REFERRAL_TIMEFRAME = 30  # in days
+    REWARD_TOKENS_TO_EVALUATORS = False
 
     CONTRIBUTION_TYPE = {
         u'base': {
@@ -66,7 +67,7 @@ class BaseContract(Contract):
             raise Exception(msg)
         user.tokens = user.tokens - self.CONTRIBUTION_TYPE[contribution_type]['fee']
 
-        new_contribution = Contribution(contract=self, user=user, contribution_type=contribution_type)
+        new_contribution = Contribution(contract=self, user=user, contribution_type=contribution_type, token_fund=self.CONTRIBUTION_TYPE[contribution_type]['fee'])
         return new_contribution
 
     def is_evaluation_value_allowed(self, value, contribution_type='base'):
@@ -78,6 +79,10 @@ class BaseContract(Contract):
             msg = 'Evaluation value "{value}" is not valid'.format(value=value)
             raise ValueError(msg)
 
+        previously_voted = False
+        if self.get_evaluations(contribution_id=contribution.id, evaluator_id=user.id):
+            previously_voted = True
+
         # disactivate any previous evaluations by this user
         for previous_evaluation in self.get_evaluations(
                 contribution_id=contribution.id,
@@ -87,6 +92,12 @@ class BaseContract(Contract):
             DBSession.delete(previous_evaluation)
 
         evaluation = Evaluation(contract=self, user=user, contribution=contribution, value=value)
+
+        # reward evaluator with tokens according to his reputation.
+        if self.REWARD_TOKENS_TO_EVALUATORS:
+            if not previously_voted:
+                self.reward_evaluator_with_tokens(evaluation)
+
         #  have the user has to pay his fees to make the evaluation
         self.pay_evaluation_fee(evaluation)
 
@@ -96,6 +107,23 @@ class BaseContract(Contract):
         self.reward_contributor(evaluation)
 
         return evaluation
+
+    def reward_evaluator_with_tokens(self, evaluation):
+        contribution = evaluation.contribution
+        user = evaluation.user
+
+        # calc relevant quantities for token reward
+        evaluator_rep = user.reputation
+        engaged_rep = contribution.engaged_reputation() - evaluator_rep  # contribution.engaged_reputation includes evaluator_rep
+        total_rep = self.total_reputation()
+        unvoted_rep = total_rep - engaged_rep
+
+        if unvoted_rep > 0:
+            # calc token reward
+            token_reward = contribution.token_fund * (evaluator_rep / unvoted_rep)
+            # update users tokens and deduct amount from fund.
+            user.tokens += token_reward
+            contribution.token_fund -= token_reward
 
     def pay_evaluation_fee(self, evaluation):
         """calculate the fee for the evaluator of this evaluation
