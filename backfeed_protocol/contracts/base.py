@@ -37,12 +37,16 @@ class BaseContract(Contract):
     }
 
     @with_session
-    def create_user(self, tokens=None, reputation=None, referrer=None):
+    def create_user(self, tokens=None, reputation=None, referrer=None, referrer_id=None):
         """create a new user with default values"""
         if tokens is None:
             tokens = self.USER_INITIAL_TOKENS
         if reputation is None:
             reputation = self.USER_INITIAL_REPUTATION
+        if referrer is None and referrer_id:
+            referrer = self.get_user(referrer_id)
+            if not referrer:
+                raise ValueError('A user with id "{referrer_id}" could not be found'.format(referrer_id=referrer_id))
         new_user = User(
             contract=self,
             reputation=reputation,
