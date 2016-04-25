@@ -55,3 +55,7 @@ class EvaluationTest(BaseContractTestCase):
         self.assertEqual(user3.tokens, contract.USER_INITIAL_TOKENS + 0.2 * contract.CONTRIBUTION_TYPE[contribution0.contribution_type]['fee'])
         contract.create_evaluation(user4, contribution0, value=0)
         self.assertEqual(user4.tokens, contract.USER_INITIAL_TOKENS + 0.2 * contract.CONTRIBUTION_TYPE[contribution0.contribution_type]['fee'])
+
+        # check token balance unchanged when voting again
+        contract.create_evaluation(user1, contribution0, value=0)
+        self.assertEqual(user1.tokens, contract.USER_INITIAL_TOKENS + 0.2 * contract.CONTRIBUTION_TYPE[contribution0.contribution_type]['fee'])
