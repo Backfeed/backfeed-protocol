@@ -15,8 +15,8 @@ class User(Base):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    contract_id = Column(Integer, ForeignKey('contract.id'))
     name = Column(Unicode(255), unique=True)
+    contract_id = Column(Integer, ForeignKey('contract.id'))
     reputation = Column(Float)
     tokens = Column(Float)
     # the time that this object was added
