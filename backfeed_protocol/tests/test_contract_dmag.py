@@ -335,7 +335,6 @@ class DmagTest(BaseContractTestCase):
             # TODO: these are the simulation results
             # user2: {"reputation": 22.7586, "tokens": 78.9576},
             user2: {"reputation": 22.7716, "tokens": 79.08672},
-            user2: {"reputation": 22.8198, "tokens": 79.0968},
             user3: {"reputation": 20.2785, "tokens": 50 - 1},
             user4: {"reputation": 20.2009, "tokens": 50},
             user5: {"reputation": 19.8526, "tokens": 50}

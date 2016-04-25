@@ -31,10 +31,10 @@ class BaseContractTestCase(TestCase):
     def get_contract_with_data(self):
         contract = self.get_fresh_contract()
 
-        user0 = contract.create_user()
-        user1 = contract.create_user()
-        user2 = contract.create_user()
-        user3 = contract.create_user()
+        user0 = contract.create_user(tokens=10, reputation=10)
+        user1 = contract.create_user(tokens=10, reputation=10)
+        user2 = contract.create_user(tokens=10, reputation=10)
+        user3 = contract.create_user(tokens=10, reputation=10)
 
         contribution0 = contract.create_contribution(user=user0)
         contribution1 = contract.create_contribution(user=user0)

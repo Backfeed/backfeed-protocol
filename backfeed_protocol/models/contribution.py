@@ -28,7 +28,7 @@ class Contribution(Base):
 
     def engaged_reputation(self):
         """return the total amount of reputation of users that have voted for this contribution"""
-        return sum([evaluation.user.reputation for evaluation in self.evaluations])
+        return sum([evaluation.user.reputation for evaluation in self.contract.get_evaluations(contribution_id=self.id)])
 
     def get_contract(self):
         from .. import utils

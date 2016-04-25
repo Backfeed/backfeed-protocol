@@ -40,3 +40,8 @@ class ContributionTest(BaseContractTestCase):
         contribution.time = datetime(2000, 1, 1)
         score_at_time1 = contract.contribution_score(contribution)
         self.assertLess(score_at_time1, score_at_time0)
+
+    def test_contribution_engaged_reputation(self):
+        self.get_contract_with_data()
+        self.assertEqual(self.contribution0.engaged_reputation(), self.user1.reputation + self.user2.reputation + self.user3.reputation)
+        self.assertEqual(self.contribution1.engaged_reputation(), self.user2.reputation + self.user3.reputation)
