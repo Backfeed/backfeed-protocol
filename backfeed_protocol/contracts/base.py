@@ -37,13 +37,18 @@ class BaseContract(Contract):
     }
 
     @with_session
-    def create_user(self, tokens=None, reputation=None, referrer_id=''):
+    def create_user(self, tokens=None, reputation=None, referrer=None):
         """create a new user with default values"""
         if tokens is None:
             tokens = self.USER_INITIAL_TOKENS
         if reputation is None:
             reputation = self.USER_INITIAL_REPUTATION
-        new_user = User(contract=self, reputation=reputation, tokens=tokens)
+        new_user = User(
+            contract=self,
+            reputation=reputation,
+            tokens=tokens,
+            referrer=referrer,
+        )
         return new_user
 
     @with_session
@@ -127,9 +132,14 @@ class BaseContract(Contract):
             # update previous voters
             for e in contribution.evaluations:
                 if e.value == evaluation.value and e.user.id != evaluation.user.id:
-                    e.user.reputation *= 1 + \
-                        (self.CONTRIBUTION_TYPE[contribution.contribution_type]['distribution_stake'] * stake_distribution * burn_factor)
-                    # e.user.save()
+                    new_reputation = e.user.reputation * \
+                        (1 + (self.CONTRIBUTION_TYPE[contribution.contribution_type]['distribution_stake'] * stake_distribution * burn_factor))
+
+                    reputation_delta = new_reputation - e.user.reputation
+                    e.user.reputation = new_reputation
+                    # reward the referrer
+                    if e.user.referrer:
+                        e.user.referrer.reputation += reputation_delta * self.REFERRAL_REWARD_FRACTION
 
     def sum_equally_voted_reputation(self, evaluation):
         """return the sum of reputation of evaluators of evaluation.contribution that
@@ -176,11 +186,17 @@ class BaseContract(Contract):
 
         if rewardBase > 0:
             # calc token reward by score/score_delta * tokenRewardFactor
-            tokenReward = self.CONTRIBUTION_TYPE[contribution.contribution_type]['token_reward_factor'] * rewardBase
+            token_reward_factor = self.CONTRIBUTION_TYPE[contribution.contribution_type]['token_reward_factor']
+            token_reward = token_reward_factor * rewardBase
             # calc token reward by score/score_delta * reputationRewardFactor
-            reputationReward = self.CONTRIBUTION_TYPE[contribution.contribution_type]['reputation_reward_factor'] * rewardBase
-            contributor.tokens = contributor.tokens + tokenReward
+            reputation_reward_factor = self.CONTRIBUTION_TYPE[contribution.contribution_type]['reputation_reward_factor']
+            reputationReward = reputation_reward_factor * rewardBase
+            contributor.tokens = contributor.tokens + token_reward
             contributor.reputation = contributor.reputation + reputationReward
+
+            if contributor.referrer:
+                contributor.referrer.tokens += token_reward * self.REFERRAL_REWARD_FRACTION
+                contributor.referrer.reputation += reputationReward * self.REFERRAL_REWARD_FRACTION
 
     def get_evaluation(self, evaluation_id):
         if evaluation_id is None:

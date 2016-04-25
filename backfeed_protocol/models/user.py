@@ -24,6 +24,9 @@ class User(Base):
     evaluations = relationship('Evaluation', backref='user')
     contributions = relationship('Contribution', backref='user')
 
+    referrer_id = Column(Integer, ForeignKey('user.id'))
+    referrer = relationship('User', remote_side=[id])
+
     def relative_reputation(self):
         """return the reputation as a fraction of the total reputation"""
         return self.reputation / self.contract.total_reputation()

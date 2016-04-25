@@ -1,5 +1,4 @@
 import types
-import datetime
 
 from common import TestCase
 from ..contracts.base import BaseContract
@@ -99,10 +98,3 @@ class ContractSanityTest(BaseContractTestCase):
         contract.create_evaluation(user2, contribution2, value=0)
 
         self.assertRaises(ValueError, contract.create_evaluation, user2, contribution1, value=3.14)
-
-    def test_get_user(self):
-        user_id = self.contract.create_user().id
-        user = self.contract.get_user(user_id=user_id)
-
-        self.assertEqual(user.id, user_id)
-        self.assertTrue(isinstance(user.time, datetime.datetime))
