@@ -47,4 +47,6 @@ class Contribution(Base):
 
         return {
             'evaluations': evaluation_stats,
+            'score': self.contract.contribution_score(self),
+            'engaged_reputation': self.engaged_reputation(),
         }

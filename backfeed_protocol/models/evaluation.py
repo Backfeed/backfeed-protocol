@@ -1,7 +1,6 @@
 from datetime import datetime
 from ..models import Base
 from sqlalchemy import Column
-from sqlalchemy import Unicode
 from sqlalchemy import Integer
 from sqlalchemy import Float
 from sqlalchemy import ForeignKey
@@ -16,5 +15,4 @@ class Evaluation(Base):
     # the time that this object was added
     time = Column(DateTime, default=datetime.now())
     value = Column(Float)
-    contribution_type = Column(Unicode(255), unique=True)
     user_id = Column(Integer, ForeignKey('user.id'))
