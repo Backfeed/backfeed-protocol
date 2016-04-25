@@ -1,4 +1,5 @@
 from __future__ import division  # do division with floating point arithmetic
+from datetime import datetime
 from sqlalchemy import func
 
 from ..models.user import User
@@ -141,9 +142,19 @@ class BaseContract(Contract):
         return equallyVotedRep - evaluation.user.reputation
 
     def contribution_score(self, contribution):
-        upVotedRep = sum(e.user.reputation for e in contribution.evaluations if e.value == 1)
-        score = upVotedRep / self.total_reputation()
+        total_reputation = self.total_reputation()
+        upvotes = self.contribution_upvotes(contribution)
+        downvotes = sum(e.user.reputation for e in contribution.evaluations if e.value == 0)
+        downvotes = downvotes / total_reputation
+        time_added = contribution.time
+        time_delta = datetime.now() - time_added
+        score = (1.0 - downvotes) * upvotes * (0.1 + 27 / (30 + time_delta.days))
         return score
+
+    def contribution_upvotes(self, contribution):
+        upvotes = sum(e.user.reputation for e in contribution.evaluations if e.value == 1)
+        upvotes = upvotes / self.total_reputation()
+        return upvotes
 
     def reward_contributor(self, evaluation):
         # don't reward anything if the value is 0/
@@ -152,7 +163,8 @@ class BaseContract(Contract):
         contribution = evaluation.contribution
         contributor = evaluation.contribution.user
         rewardBase = 0
-        currentScore = self.contribution_score(contribution)
+        # currentScore = self.contribution_score(contribution)
+        currentScore = self.contribution_upvotes(contribution)
 
         max_score = evaluation.contribution.max_score
         if currentScore > max_score:

@@ -31,3 +31,12 @@ class ContributionTest(BaseContractTestCase):
         self.assertEqual(contribution.id, contribution_id)
         self.assertEqual(contribution.user, user)
         self.assertTrue(isinstance(contribution.time, datetime))
+
+    def test_contribution_score(self):
+        contract = self.get_contract_with_data()
+        contribution = self.contribution0
+
+        score_at_time0 = contract.contribution_score(contribution)
+        contribution.time = datetime(2000, 1, 1)
+        score_at_time1 = contract.contribution_score(contribution)
+        self.assertLess(score_at_time1, score_at_time0)

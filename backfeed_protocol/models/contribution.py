@@ -26,12 +26,6 @@ class Contribution(Base):
 
     def engaged_reputation(self):
         """return the total amount of reputation of users that have voted for this contribution"""
-        # engaged_reputation= DBSession.query(func.sum(User.reputation)).\
-        #     join(Evaluation).\
-        #     filter(Evaluation.user_id==User.id).\
-        #     filter(Evaluation.contribution_id ==self.id).\
-        #     one()[0]
-        # return engaged_reputation
         return sum([evaluation.user.reputation for evaluation in self.evaluations])
 
     def get_contract(self):
