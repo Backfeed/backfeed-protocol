@@ -30,23 +30,23 @@ class Contribution(Base):
         """return the total amount of reputation of users that have voted for this contribution"""
         return sum([evaluation.user.reputation for evaluation in self.contract.get_evaluations(contribution_id=self.id)])
 
-    def get_contract(self):
-        from .. import utils
-        return utils.get_contract(contract_id=self.contract.id)
-
     def get_statistics(self):
         """return information about evaluations, repuation engaged, etc"""
         evaluation_stats = {}
-        possible_values = self.get_contract().CONTRIBUTION_TYPE[self.contribution_type]['evaluation_set']
+        total_reputation = self.contract.total_reputation()
+        engaged_reputation = self.engaged_reputation()
+        possible_values = self.contract.CONTRIBUTION_TYPE[self.contribution_type]['evaluation_set']
         for value in possible_values:
             reputation = sum(evaluation.user.reputation for evaluation in self.contract.get_evaluations(value=value, contribution_id=self.id))
             if reputation:
                 evaluation_stats[value] = {
                     'reputation': reputation,
+                    'reputation_normal': reputation / total_reputation,
                 }
 
         return {
             'evaluations': evaluation_stats,
             'score': self.contract.contribution_score(self),
-            'engaged_reputation': self.engaged_reputation(),
+            'engaged_reputation': engaged_reputation,
+            'engaged_reputation_normal': engaged_reputation / total_reputation,
         }
