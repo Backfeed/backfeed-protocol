@@ -37,6 +37,16 @@ class BaseContract(Contract):
         }
     }
 
+    def _info(self):
+        """return some information about the configuration of this contract"""
+        import subprocess
+        git_hash = subprocess.check_output(["git", "rev-parse", 'HEAD']).strip()
+        return {
+            'class': self.__class__,
+            'engine': DBSession.get_bind(),
+            'version': git_hash,
+        }
+
     @with_session
     def create_user(self, tokens=None, reputation=None, referrer=None, referrer_id=None):
         """create a new user with default values"""
