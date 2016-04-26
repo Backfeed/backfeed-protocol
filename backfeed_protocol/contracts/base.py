@@ -266,8 +266,45 @@ class BaseContract(Contract):
             raise ValueError("contribution_id cannot be None")
         return DBSession.query(Contribution).get(contribution_id)
 
-    def get_contributions(self):
-        return DBSession.query(Contribution).all()
+    def get_contributions(self, start=0, limit=None, contributor_id=None, order_by='-score'):
+        query = DBSession.query(Contribution)
+        # TODO: add 'score' as a column to the database, and do the ordering
+        # from there
+        # if order_by:
+        #     query = query.order_by(order_by)
+        # if limit:
+        #     query = query.limit(limit)
+        # if start:
+        #     query = query.start(start)
+        if order_by == 'score':
+            results = query.all()
+
+            def sort_key(x):
+                return self.contribution_score(x)
+
+            results.sort(key=sort_key)
+        elif order_by == '-score':
+            results = query.all()
+
+            def sort_key(x):
+                return self.contribution_score(x)
+
+            results.sort(key=sort_key, reverse=True)
+        elif order_by == 'time':
+            query = query.order_by(Contribution.time)
+            results = query.all()
+        elif order_by == '-time':
+            query = query.order_by(Contribution.time.desc())
+            results = query.all()
+        else:
+            raise ValueError('Unknown "order_by" value: "{order_by}"'.format(order_by=order_by))
+        results = results[start:]
+        if limit:
+            results = results[:limit]
+        return results
+
+    def contributions_count(self):
+        return DBSession.query(Contribution).count()
 
     def total_reputation(self):
         return DBSession.query(func.sum(User.reputation)).one()[0]
