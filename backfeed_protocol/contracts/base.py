@@ -108,7 +108,7 @@ class BaseContract(Contract):
                 evaluator_id=user.id):
             # TODO: we should not remove the evaluation from the database
             # because it will interest us for auditing
-            DBSession.delete(previous_evaluation)
+            contribution.evaluations.remove(previous_evaluation)
 
         evaluation = Evaluation(contract=self, user=user, contribution=contribution, value=value)
 
@@ -159,7 +159,6 @@ class BaseContract(Contract):
 
         fee = self.CONTRIBUTION_TYPE[contribution.contribution_type]['stake'] * stakeFee
         evaluation.user.reputation -= fee
-        # evaluation.user.save()
 
     def reward_previous_evaluators(self, evaluation):
         """award the evaluators of this contribution that have previously voted evaluation.value"""
