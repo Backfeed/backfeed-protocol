@@ -34,12 +34,12 @@ class TestContract(DMagContract):
     }
 
 
-class DmagTest(BaseContractTestCase):
+class RewardsAndFeeTest(BaseContractTestCase):
     """test dmag protocol"""
     contract_class_to_test = TestContract
 
     def setUp(self):
-        super(DmagTest, self).setUp()
+        super(RewardsAndFeeTest, self).setUp()
         self.contract = self.get_fresh_contract()
         self.allowedDeviation = 0.00005
 
@@ -179,3 +179,38 @@ class DmagTest(BaseContractTestCase):
         evaluation3 = contract.create_evaluation(contribution=contribution, user=evaluator3, value=1)
         self.assertGreater(evaluation3.contribution.user.tokens, 0)
         self.assertGreater(evaluation3.contribution.user.reputation, 0)
+
+    # Test Evaluation fee
+    #
+    def evaluation_fee(self, reputation_at_stake, total_reputation=1.0):
+        """assert that the fee payed for evaluating a contribution is equal to reputation_fee
+
+        reputation_at_stake: the reputation of the evaluator
+
+        note that in the DMAG implementation, the evaluation fee depends
+        exclusively on the (relative) repuation of the evaluator
+
+        """
+        contract = self.get_fresh_contract()
+
+        contributor = contract.create_user(reputation=total_reputation - reputation_at_stake)
+        evaluator = contract.create_user(reputation=reputation_at_stake)
+        contribution = contract.create_contribution(user=contributor, contribution_type='article')
+        # do not use contract.create_evaluation in the test, because that will call pay_evaluation_fee
+        evaluation = Evaluation(user=evaluator, contribution=contribution, value=1)
+        contract.pay_evaluation_fee(evaluation)
+        fee_payed = reputation_at_stake - evaluation.user.reputation
+        return fee_payed
+
+    def test_evaluation_fee(self):
+        self.assertAlmostEqual(self.evaluation_fee(reputation_at_stake=0.00), 0.0)
+        self.assertAlmostEqual(self.evaluation_fee(reputation_at_stake=0.25), 0.0025, places=4)
+        self.assertAlmostEqual(self.evaluation_fee(reputation_at_stake=0.33), 0.0028, places=4)
+        self.assertAlmostEqual(self.evaluation_fee(reputation_at_stake=0.50), 0.0029, places=4)
+        self.assertAlmostEqual(self.evaluation_fee(reputation_at_stake=1.00), 0.0000, places=4)
+
+    def test_evaluation_fee_depends_only_on_relative_reputation(self):
+        # make sure that the evaluation fee a user pays depends only on her repution as a fraction of the total
+        fee1 = self.evaluation_fee(reputation_at_stake=0.314, total_reputation=1.0)
+        fee2 = self.evaluation_fee(reputation_at_stake=314, total_reputation=1000)
+        self.assertAlmostEqual(fee1 / 1.0, fee2 / 1000, places=4)
