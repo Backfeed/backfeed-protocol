@@ -1,4 +1,4 @@
-Backfeed Protocols  
+Backfeed Protocols
 [![Build Status](https://travis-ci.org/Backfeed/backfeed-protocol.svg?branch=master)](https://travis-ci.org/Backfeed/backfeed-protocol)
 --------------------------------
 
@@ -71,12 +71,12 @@ Once you have the package installed, you can use it like this:
     >>> evaluation = contract.create_evaluation(contribution=contribution, user=bonnie, value=1)
     >>> # bonnie pays a reputation fee to make the evaluation
     >>> bonnie.reputation
-    99.90692517849118
+    99.88883657864379
     >>> # because bonnie represents the majority, ann will get a reward
     >>> ann.tokens
-    54.45069613049415
+    27.17997891117114
     >>> ann.reputation
-    14.545069613049415
+    55.44994727792785
 
 ## Contributing
 

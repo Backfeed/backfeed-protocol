@@ -36,6 +36,8 @@ class DmagTest(BaseContractTestCase):
 
         """
         contract = self.get_fresh_contract()
+        contract.ALPHA = 0.7
+        contract.BETA = 0.5
 
         contributor = contract.create_user(reputation=total_reputation - reputation_at_stake)
         evaluator = contract.create_user(reputation=reputation_at_stake)
@@ -101,6 +103,8 @@ class DmagTest(BaseContractTestCase):
     def test_evaluation_reward(self):
 
         settings = {
+            'ALPHA': 0.7,
+            'BETA': 0.5,
             'CONTRIBUTION_TYPE': {
                 u'article': {
                     'fee': 1,
@@ -144,6 +148,8 @@ class DmagTest(BaseContractTestCase):
         """test if our results match the R simulation"""
         contract = self.contract
 
+        contract.ALPHA = 0.7
+        contract.BETA = 0.5
         contract.CONTRIBUTION_TYPE = {
             'article': {
                 'fee': 1,
