@@ -13,7 +13,7 @@ class DMagContract(BaseContract):
         u'article': {
             'fee': 1,
             'distribution_stake': 0.08,
-            'reputation_reward_factor': 5,
+            'reputation_reward_factor': 50,
             'reward_threshold': 0.5,
             'stake': 0.02,
             'token_reward_factor': 50,

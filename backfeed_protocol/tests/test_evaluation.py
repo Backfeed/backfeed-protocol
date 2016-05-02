@@ -148,4 +148,5 @@ class EvaluationTest(BaseContractTestCase):
         contract.create_evaluation(contribution=contribution0, user=user2, value=1)
 
         new_rep = user1.relative_reputation() + user2.relative_reputation()
-        self.assertLess(new_rep, original_rep)
+        # the rep is NOT LOWER
+        self.assertGreater(new_rep, original_rep)
