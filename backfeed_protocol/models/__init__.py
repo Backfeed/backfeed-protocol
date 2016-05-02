@@ -19,12 +19,12 @@ def initialize_sql(engine):
 def with_session(fn):
     """a decorator for functions that do database operations"""
     def go(*args, **kw):
-        DBSession.begin(subtransactions=True)
+        # DBSession.begin(subtransactions=True)
         try:
             ret = fn(*args, **kw)
             DBSession.commit()
             return ret
         except:
-            # DBSession.rollback()
+            DBSession.rollback()
             raise
     return go

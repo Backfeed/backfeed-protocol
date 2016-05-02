@@ -23,7 +23,7 @@ def setup_database(
 def reset_database():
     """delete all data from the database"""
     session = DBSession
-    db_tables = [Contract, Contribution, Evaluation, User]
+    db_tables = [Evaluation, Contribution, User, Contract]
     for table in db_tables:
         session.query(table).delete()
 
