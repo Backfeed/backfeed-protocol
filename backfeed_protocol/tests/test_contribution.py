@@ -23,7 +23,7 @@ class ContributionTest(BaseContractTestCase):
         self.assertRaises(KeyError, contract.create_contribution, user, contribution_type='spam')
 
     def test_get_contribution(self):
-        user = self.contract.create_user()
+        user = self.contract.create_user(reputation=3.141)
         contribution = self.contract.create_contribution(user=user)
         contribution_id = contribution.id
         contribution = self.contract.get_contribution(contribution_id=contribution_id)

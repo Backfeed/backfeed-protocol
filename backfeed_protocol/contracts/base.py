@@ -151,13 +151,13 @@ class BaseContract(Contract):
          """
         user = evaluation.user
         contribution = evaluation.contribution
+        if user.reputation:
+            votedRep = contribution.engaged_reputation()
 
-        votedRep = contribution.engaged_reputation()
+            stakeFee = user.reputation * (1 - ((votedRep / self.total_reputation()) ** self.BETA))
 
-        stakeFee = user.reputation * (1 - ((votedRep / self.total_reputation()) ** self.BETA))
-
-        fee = self.CONTRIBUTION_TYPE[contribution.contribution_type]['stake'] * stakeFee
-        evaluation.user.reputation -= fee
+            fee = self.CONTRIBUTION_TYPE[contribution.contribution_type]['stake'] * stakeFee
+            user.reputation -= fee
 
     def reward_previous_evaluators(self, evaluation):
         """award the evaluators of this contribution that have previously voted evaluation.value"""
@@ -194,17 +194,21 @@ class BaseContract(Contract):
 
     def contribution_score(self, contribution):
         total_reputation = self.total_reputation()
-        upvotes = self.contribution_upvotes(contribution)
-        downvotes = sum(e.user.reputation for e in contribution.evaluations if e.value == 0)
-        downvotes = downvotes / total_reputation
-        time_added = contribution.time
-        time_delta = datetime.now() - time_added
-        score = (1.0 - downvotes) * upvotes * (0.1 + 27 / (30 + time_delta.days))
+        if total_reputation:
+            upvotes = self.contribution_upvotes(contribution)
+            downvotes = sum(e.user.reputation for e in contribution.evaluations if e.value == 0)
+            downvotes = downvotes / total_reputation
+            time_added = contribution.time
+            time_delta = datetime.now() - time_added
+            score = (1.0 - downvotes) * upvotes * (0.1 + 27 / (30 + time_delta.days))
+        else:
+            score = 0
         return score
 
     def contribution_upvotes(self, contribution):
         upvotes = sum(e.user.reputation for e in contribution.evaluations if e.value == 1)
-        upvotes = upvotes / self.total_reputation()
+        if upvotes > 0:
+            upvotes = upvotes / self.total_reputation()
         return upvotes
 
     def reward_contributor(self, evaluation):

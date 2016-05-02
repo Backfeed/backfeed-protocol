@@ -9,7 +9,7 @@ class EvaluationTest(BaseContractTestCase):
     contract_class_to_test = DMagContract
 
     def test_get_evaluation(self):
-        user = self.contract.create_user()
+        user = self.contract.create_user(reputation=3.141)
         contribution = self.contract.create_contribution(user=user)
         value = 1
         evaluation = self.contract.create_evaluation(contribution=contribution, user=user, value=value)
@@ -40,11 +40,11 @@ class EvaluationTest(BaseContractTestCase):
         contract = self.get_fresh_contract()
         contract.REWARD_TOKENS_TO_EVALUATORS = True
 
-        user0 = contract.create_user()
-        user1 = contract.create_user()
-        user2 = contract.create_user()
-        user3 = contract.create_user()
-        user4 = contract.create_user()
+        user0 = contract.create_user(reputation=3.141)
+        user1 = contract.create_user(reputation=3.141)
+        user2 = contract.create_user(reputation=3.141)
+        user3 = contract.create_user(reputation=3.141)
+        user4 = contract.create_user(reputation=3.141)
 
         contribution0 = contract.create_contribution(user=user0)
         contract.create_evaluation(user1, contribution0, value=1)
@@ -66,7 +66,7 @@ class EvaluationTest(BaseContractTestCase):
         initial_reputation = 10
         contract = self.contract
         user = contract.create_user(reputation=initial_reputation)
-        contributor = contract.create_user()
+        contributor = contract.create_user(reputation=20)
         contribution = contract.create_contribution(user=contributor)
 
         user.reputation = initial_reputation

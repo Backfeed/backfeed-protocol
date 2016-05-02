@@ -9,6 +9,7 @@ from models.evaluation import Evaluation
 from models.user import User
 from models import with_session
 from contracts.dmag import DMagContract
+from contracts.example import ExampleContract
 
 
 def setup_database(
@@ -28,15 +29,21 @@ def reset_database():
 
 
 @with_session
-def get_contract(name=None, contract_id=1):
+def get_contract(name='dmag', contract_id=1):
     """return the contract identified by name
 
     returns a Contract instance
 
     TODO: for now, this function returns a DMagContract()
     """
-    contract = DBSession.query(DMagContract).get(contract_id)
+    if name == 'example':
+        contract_class = ExampleContract
+    elif name == 'dmag':
+        contract_class = DMagContract
+    else:
+        raise ValueError('Unknown contract type: {name}'.format(name=name))
+    contract = DBSession.query(contract_class).get(contract_id)
     if contract is None:
-        contract = DMagContract()
+        contract = contract_class()
         DBSession.add(contract)
     return contract

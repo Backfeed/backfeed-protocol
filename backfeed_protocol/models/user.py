@@ -29,4 +29,7 @@ class User(Base):
 
     def relative_reputation(self):
         """return the reputation as a fraction of the total reputation"""
-        return self.reputation / self.contract.total_reputation()
+        if self.reputation:
+            return self.reputation / self.contract.total_reputation()
+        else:
+            return 0

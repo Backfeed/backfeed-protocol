@@ -30,6 +30,14 @@ class Contribution(Base):
         """return the total amount of reputation of users that have voted for this contribution"""
         return sum([evaluation.user.reputation for evaluation in self.contract.get_evaluations(contribution_id=self.id)])
 
+    def engaged_reputation_normal(self):
+        engaged_reputation = self.engaged_reputation()
+        if engaged_reputation:
+            engaged_reputation_normal = engaged_reputation / self.contract.total_reputation()
+            return engaged_reputation_normal
+        else:
+            return 0
+
     def get_statistics(self):
         """return information about evaluations, repuation engaged, etc"""
         evaluation_stats = {}
@@ -38,15 +46,23 @@ class Contribution(Base):
         possible_values = self.contract.CONTRIBUTION_TYPE[self.contribution_type]['evaluation_set']
         for value in possible_values:
             reputation = sum(evaluation.user.reputation for evaluation in self.contract.get_evaluations(value=value, contribution_id=self.id))
-            if reputation:
-                evaluation_stats[value] = {
-                    'reputation': reputation,
-                    'reputation_normal': reputation / total_reputation,
-                }
+            if total_reputation:
+                reputation_normal = reputation / total_reputation
+            else:
+                reputation_normal = 0
+            evaluation_stats[value] = {
+                'reputation': reputation,
+                'reputation_normal': reputation_normal,
+            }
+
+        if total_reputation:
+            engaged_reputation_normal = engaged_reputation / total_reputation
+        else:
+            engaged_reputation_normal = 0
 
         return {
             'evaluations': evaluation_stats,
             'score': self.contract.contribution_score(self),
             'engaged_reputation': engaged_reputation,
-            'engaged_reputation_normal': engaged_reputation / total_reputation,
+            'engaged_reputation_normal': engaged_reputation_normal,
         }
