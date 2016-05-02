@@ -75,28 +75,26 @@ class DmagTest(BaseContractTestCase):
         contributor = contract.create_user(reputation=remaining_reputation)
 
         contribution = contract.create_contribution(user=contributor, contribution_type=u'article')
-        evaluation = contract.create_evaluation(user=evaluator, contribution=contribution, value=1)
+        contract.create_evaluation(user=evaluator, contribution=contribution, value=1)
 
-        # TODO: the next lines are just hacks needed
-        # because we did not properly separate db layer from logic
-        evaluator.reputation = reputation_at_stake
+        reputation_before_reward = evaluator.reputation
 
-        contribution = contract.get_contribution(contribution.id)
-        evaluation.contribution = contribution
+        contract.create_evaluation(user=new_evaluator, contribution=contribution, value=1)
 
-        new_evaluation = Evaluation(user=new_evaluator, contribution=contribution, value=1)
-
-        # TODO: write a seperate test forthis function
-        xx = contract.sum_equally_voted_reputation(new_evaluation)
-        self.assertAlmostEqual(xx, evaluator.reputation)
-        contract.reward_previous_evaluators(new_evaluation)
-
-        # more hacks
-        # user = contract.get_user(evaluation.user)
-        user = evaluation.user
-
-        reward = user.reputation - reputation_at_stake
+        reward = evaluator.reputation - reputation_before_reward
         return reward
+
+    def test_sum_equally_voted_reputation(self):
+        contract = self.contract
+        user0 = contract.create_user(reputation=10)
+        user1 = contract.create_user(reputation=20)
+        user2 = contract.create_user(reputation=3)
+        contribution = contract.create_contribution(user=user0)
+        contract.create_evaluation(contribution=contribution, user=user0, value=1)
+        contract.create_evaluation(contribution=contribution, user=user1, value=0)
+        evaluation = contract.create_evaluation(contribution=contribution, user=user2, value=1)
+
+        self.assertEqual(contract.sum_equally_voted_reputation(evaluation), user0.reputation)
 
     def test_evaluation_reward(self):
         reward = self.evaluation_reward(reputation_at_stake=.2, new_reputation_at_stake=0.2)
@@ -104,7 +102,7 @@ class DmagTest(BaseContractTestCase):
 
         # get a BIG confirmation of 80%
         reward = self.evaluation_reward(reputation_at_stake=.2, new_reputation_at_stake=0.8)
-        self.assertAlmostEqual(reward, 0.0128, places=4)
+        self.assertAlmostEqual(reward, 0.0127, places=4)
 
         #
         reward = self.evaluation_reward(reputation_at_stake=.8, new_reputation_at_stake=0.2)

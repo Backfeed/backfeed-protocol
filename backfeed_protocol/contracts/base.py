@@ -152,7 +152,6 @@ class BaseContract(Contract):
         user = evaluation.user
         contribution = evaluation.contribution
 
-        votedRep = user.reputation + contribution.engaged_reputation()
         votedRep = contribution.engaged_reputation()
 
         stakeFee = user.reputation * (1 - ((votedRep / self.total_reputation()) ** self.BETA))
@@ -189,8 +188,9 @@ class BaseContract(Contract):
             join(Evaluation).\
             filter(Evaluation.contribution_id == evaluation.contribution.id).\
             filter(Evaluation.value == evaluation.value).\
-            one()[0]
-        return equallyVotedRep - evaluation.user.reputation
+            filter(Evaluation.id != evaluation.id).\
+            one()[0] or 0
+        return equallyVotedRep
 
     def contribution_score(self, contribution):
         total_reputation = self.total_reputation()

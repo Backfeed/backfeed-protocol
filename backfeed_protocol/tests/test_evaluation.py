@@ -81,36 +81,71 @@ class EvaluationTest(BaseContractTestCase):
         contract.create_evaluation(contribution=contribution, user=user, value=1)
         self.assertEqual(fee_paid, initial_reputation - user.reputation)
 
-    def test_vote_changing_score(self):
-        self.maxDiff = None
+    def test_vote_changing_removes_previous_evaluations(self):
+        contract = self.contract
+        user0 = contract.create_user(tokens=10, reputation=10)
+        contribution0 = contract.create_contribution(user=user0)
+        contract.create_evaluation(contribution=contribution0, user=user0, value=1)
+        contract.create_evaluation(contribution=contribution0, user=user0, value=1)
+        contract.create_evaluation(contribution=contribution0, user=user0, value=0)
+        self.assertEqual(len(contribution0.evaluations), 1)
+
+    def test_vote_changing_attack1(self):
+        contract = self.contract
+
+        user0 = contract.create_user(tokens=10, reputation=10)
+        user1 = contract.create_user(tokens=10, reputation=10)
+        user2 = contract.create_user(tokens=10, reputation=20)
+        user3 = contract.create_user(tokens=10, reputation=10)  # NOQA
+        user4 = contract.create_user(tokens=10, reputation=10)  # NOQA
+        contract.create_user(tokens=10, reputation=10)
+        contract.create_user(tokens=10, reputation=10)
+
+        contribution0 = contract.create_contribution(user=user0)
+
+        contract.create_evaluation(contribution=contribution0, user=user1, value=1)
+        contract.create_evaluation(contribution=contribution0, user=user2, value=1)
+
+        old_stats = contribution0.get_statistics()
+
+        # we have user1 change his vote to 0, and then to 1 again
+        contract.create_evaluation(contribution=contribution0, user=user1, value=0)
+        contract.create_evaluation(contribution=contribution0, user=user1, value=1)
+
+        # now we expect both the score as the engaged_reputation to be lower than before
+        new_stats = contribution0.get_statistics()
+
+        # the score is NOT LOWER
+        self.assertGreater(new_stats['score'], old_stats['score'])
+        self.assertGreater(new_stats['engaged_reputation_normal'], old_stats['engaged_reputation_normal'])
+
+    def test_vote_changing_score_attack2(self):
         contract = self.contract
 
         user0 = contract.create_user(tokens=10, reputation=10)
         user1 = contract.create_user(tokens=10, reputation=10)
         user2 = contract.create_user(tokens=10, reputation=10)
         user3 = contract.create_user(tokens=10, reputation=10)
+        user4 = contract.create_user(tokens=10, reputation=10)
+        user5 = contract.create_user(tokens=10, reputation=10)  # NOQA
+        user6 = contract.create_user(tokens=10, reputation=10)  # NOQA
 
-        contribution0 = contract.create_contribution(user=user0)
+        contribution0 = contract.create_contribution(user=user1)
 
+        contract.create_evaluation(contribution=contribution0, user=user0, value=1)
         contract.create_evaluation(contribution=contribution0, user=user1, value=1)
         contract.create_evaluation(contribution=contribution0, user=user2, value=1)
-        contract.create_evaluation(contribution=contribution0, user=user3, value=0)
+        contract.create_evaluation(contribution=contribution0, user=user3, value=1)
+        contract.create_evaluation(contribution=contribution0, user=user4, value=1)
 
-        # sanity check
-        self.assertEqual(len(contribution0.evaluations), 3)
+        # simulate an attack by user1 and user2 changing their votes
+        original_rep = user1.relative_reputation() + user2.relative_reputation()
 
-        old_stats = contribution0.get_statistics()
-
-        # we have user0 change his vote to 0, and then to 1 again
+        # user1 and user2 vote alternately
         contract.create_evaluation(contribution=contribution0, user=user1, value=0)
+        contract.create_evaluation(contribution=contribution0, user=user2, value=0)
         contract.create_evaluation(contribution=contribution0, user=user1, value=1)
+        contract.create_evaluation(contribution=contribution0, user=user2, value=1)
 
-        # we deleted the old contributions
-        self.assertEqual(len(contribution0.evaluations), 3)
-        # so we expect both the score as the engaged_reputation to be lower than
-        # before. BUT THEY ARE NOT!
-        new_stats = contribution0.get_statistics()
-        # the score is indeed lower
-        self.assertLessEqual(new_stats['score'], old_stats['score'])
-        # but the engaged reputation is not!
-        # self.assertLessEqual(new_stats['engaged_reputation'], old_stats['engaged_reputation'])
+        new_rep = user1.relative_reputation() + user2.relative_reputation()
+        self.assertLess(new_rep, original_rep)
