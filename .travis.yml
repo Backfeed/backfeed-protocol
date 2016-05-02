@@ -12,6 +12,5 @@ script:
 services:
  - postgresql
 before_script:
-  - psql -c 'create database backfeed-test;' -U postgres
-  - psql -c "create user backfeed-test password 'backfeed'"
-  - psql -c "grant all on backfeed-test to backfeed-test"
+  - psql -c "createuser backfeed-test -SDRP" -U postgres
+  - psql -c "createdb backfeed-test --owner=backfeed-test" -U postgres
