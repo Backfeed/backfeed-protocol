@@ -9,3 +9,9 @@ install:
  - pip install tox
 script:
  - tox -e $TOX_ENV
+services:
+ - postgresql
+before_script:
+  - psql -c 'create database backfeed-test;' -U postgres
+  - psql -c "create user backfeed-test password 'backfeed'"
+  - psql -c "grant all on backfeed-test to backfeed-test"

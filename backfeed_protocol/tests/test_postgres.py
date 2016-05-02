@@ -46,13 +46,14 @@ class TestWithPostgres(BaseContractTestCase):
 
     def test_persistence(self):
         """test if data is really really saved in the database"""
-        user = self.contract.create_user()
-        contribution = self.contract.create_contribution(user=user)
-        self.contract.create_evaluation(user=user, contribution=contribution, value=1)
-        self.assertEqual(DBSession.query(User).count(), 1)
-        self.assertEqual(DBSession.query(Contribution).count(), 1)
-        self.assertEqual(DBSession.query(Evaluation).count(), 1)
-        DBSession.close()
-        self.assertEqual(DBSession.query(User).count(), 1)
-        self.assertEqual(DBSession.query(Contribution).count(), 1)
-        self.assertEqual(DBSession.query(Evaluation).count(), 1)
+        if self.db_ok:
+            user = self.contract.create_user()
+            contribution = self.contract.create_contribution(user=user)
+            self.contract.create_evaluation(user=user, contribution=contribution, value=1)
+            self.assertEqual(DBSession.query(User).count(), 1)
+            self.assertEqual(DBSession.query(Contribution).count(), 1)
+            self.assertEqual(DBSession.query(Evaluation).count(), 1)
+            DBSession.close()
+            self.assertEqual(DBSession.query(User).count(), 1)
+            self.assertEqual(DBSession.query(Contribution).count(), 1)
+            self.assertEqual(DBSession.query(Evaluation).count(), 1)
