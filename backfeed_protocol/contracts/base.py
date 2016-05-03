@@ -18,7 +18,6 @@ class BaseContract(Contract):
     }
     USER_INITIAL_TOKENS = 50.0
     USER_INITIAL_REPUTATION = 20.0
-    ALPHA = 0.7
     BETA = 0.5
     REFERRAL_REWARD_FRACTION = 0.2
     REFERRAL_TIMEFRAME = 30  # in days
@@ -117,13 +116,23 @@ class BaseContract(Contract):
             if not previously_voted:
                 self.reward_evaluator_with_tokens(evaluation)
 
+        # caculate the relevant quantities before making changes to DB.
+
+        evaluator = user
+        evaluator_rep = evaluator.reputation
+        engaged_rep = contribution.engaged_reputation()  # includes evaluator rep.
+        equally_voted_rep = contribution.get_voted_rep_by_value(value)  # includes evaluator rep.
+        total_rep = self.total_reputation()
+        # need a more generic way of getting voted reputation by values.
+        up_voted_rep = contribution.get_voted_rep_by_value(1)
+
         #  have the user has to pay his fees to make the evaluation
-        self.pay_evaluation_fee(evaluation)
+        self.pay_evaluation_fee(evaluator, contribution, evaluator_rep, engaged_rep, total_rep)
 
         # update users reputation for previous, equally voting users
-        self.reward_previous_evaluators(evaluation)
+        self.reward_previous_evaluators(contribution, value, evaluator, evaluator_rep, equally_voted_rep)
 
-        self.reward_contributor(evaluation)
+        self.reward_contributor(contribution, value, up_voted_rep, total_rep)
 
         return evaluation
 
@@ -144,59 +153,52 @@ class BaseContract(Contract):
             user.tokens += token_reward
             contribution.token_fund -= token_reward
 
-    def pay_evaluation_fee(self, evaluation):
-        """calculate the fee for the evaluator of this evaluation
+    def calc_evaluation_fee(self, contribution, evaluator_rep, engaged_rep, total_rep):
+        if evaluator_rep:
+            stake_fee = evaluator_rep * (1 - ((engaged_rep / total_rep) ** self.BETA))
+            fee = self.CONTRIBUTION_TYPE[contribution.contribution_type]['stake'] * stake_fee
+        else:
+            fee = 0
 
-        returns a pair (token_fee, repution_fee)
-         """
-        user = evaluation.user
-        contribution = evaluation.contribution
-        if user.reputation:
-            votedRep = contribution.engaged_reputation()
+        return fee
 
-            stakeFee = user.reputation * (1 - ((votedRep / self.total_reputation()) ** self.BETA))
+    def pay_evaluation_fee(self, evaluator, contribution, evaluator_rep, engaged_rep, total_rep):
+        # calculate fee
+        fee = self.calc_evaluation_fee(contribution, evaluator_rep, engaged_rep, total_rep)
+        # deduct from evaluator's reputation.
+        evaluator.reputation -= fee
 
-            fee = self.CONTRIBUTION_TYPE[contribution.contribution_type]['stake'] * stakeFee
-            user.reputation -= fee
-
-    def reward_previous_evaluators(self, evaluation):
+    def reward_previous_evaluators(self, contribution, value, evaluator, evaluator_rep, equally_voted_rep):
         """award the evaluators of this contribution that have previously voted evaluation.value"""
-        contribution = evaluation.contribution
-        # find previous evaluations with the same value
-        equallyVotedRep = self.sum_equally_voted_reputation(evaluation)
-        if equallyVotedRep:
-            # add the rep of the current user, because that is what the R code seems to do
-            equallyVotedRep += evaluation.user.reputation
-            stake_distribution = evaluation.user.reputation / equallyVotedRep
-            burn_factor = (equallyVotedRep / self.total_reputation()) ** self.ALPHA
+        if equally_voted_rep:
+            stake_distribution = evaluator_rep / equally_voted_rep
             # update previous voters
             for e in contribution.evaluations:
-                if e.value == evaluation.value and e.user.id != evaluation.user.id:
+                if e.value == value and e.user.id != evaluator.id:
                     new_reputation = e.user.reputation * \
-                        (1 + (self.CONTRIBUTION_TYPE[contribution.contribution_type]['distribution_stake'] * stake_distribution * burn_factor))
-
+                        (1 + (self.CONTRIBUTION_TYPE[contribution.contribution_type]['distribution_stake'] * stake_distribution))
                     reputation_delta = new_reputation - e.user.reputation
                     e.user.reputation = new_reputation
                     # reward the referrer
                     if e.user.referrer:
                         e.user.referrer.reputation += reputation_delta * self.REFERRAL_REWARD_FRACTION
 
-    def sum_equally_voted_reputation(self, evaluation):
+    def sum_equally_voted_reputation(self, contribution, value):
         """return the sum of reputation of evaluators of evaluation.contribution that
         have evaluated the same value"""
-        equallyVotedRep = DBSession.query(func.sum(User.reputation)).\
+        equally_voted_rep = DBSession.query(func.sum(User.reputation)).\
             join(Evaluation).\
-            filter(Evaluation.contribution_id == evaluation.contribution.id).\
-            filter(Evaluation.value == evaluation.value).\
-            filter(Evaluation.id != evaluation.id).\
+            filter(Evaluation.contribution_id == contribution.id).\
+            filter(Evaluation.value == value).\
             one()[0] or 0
-        return equallyVotedRep
+        return equally_voted_rep
 
     def contribution_score(self, contribution):
         total_reputation = self.total_reputation()
         if total_reputation:
-            upvotes = self.contribution_upvotes(contribution)
-            downvotes = sum(e.user.reputation for e in contribution.evaluations if e.value == 0)
+            upvotes = contribution.get_voted_rep_by_value(1)
+            upvotes = upvotes / total_reputation
+            downvotes = contribution.get_voted_rep_by_value(0)
             downvotes = downvotes / total_reputation
             time_added = contribution.time
             time_delta = datetime.now() - time_added
@@ -205,43 +207,34 @@ class BaseContract(Contract):
             score = 0
         return score
 
-    def contribution_upvotes(self, contribution):
-        upvotes = sum(e.user.reputation for e in contribution.evaluations if e.value == 1)
-        if upvotes > 0:
-            upvotes = upvotes / self.total_reputation()
-        return upvotes
-
-    def reward_contributor(self, evaluation):
+    def reward_contributor(self, contribution, value, up_voted_rep, total_rep):
         # don't reward anything if the value is 0/
-        if evaluation.value == 0:
+        if value == 0:
             return
-        contribution = evaluation.contribution
-        contributor = evaluation.contribution.user
-        rewardBase = 0
-        # currentScore = self.contribution_score(contribution)
-        currentScore = self.contribution_upvotes(contribution)
-
-        max_score = evaluation.contribution.max_score
-        if currentScore > max_score:
+        contributor = contribution.user
+        reward_base = 0
+        current_score = up_voted_rep / total_rep
+        max_score = contribution.max_score
+        if current_score > max_score:
             if max_score >= self.CONTRIBUTION_TYPE[contribution.contribution_type]['reward_threshold']:
-                rewardBase = currentScore - max_score
-            elif currentScore > self.CONTRIBUTION_TYPE[contribution.contribution_type]['reward_threshold']:
-                rewardBase = currentScore
-            contribution.max_score = currentScore
+                reward_base = current_score - max_score
+            elif current_score > self.CONTRIBUTION_TYPE[contribution.contribution_type]['reward_threshold']:
+                reward_base = current_score
+            contribution.max_score = current_score
 
-        if rewardBase > 0:
+        if reward_base > 0:
             # calc token reward by score/score_delta * tokenRewardFactor
             token_reward_factor = self.CONTRIBUTION_TYPE[contribution.contribution_type]['token_reward_factor']
-            token_reward = token_reward_factor * rewardBase
+            token_reward = token_reward_factor * reward_base
             # calc token reward by score/score_delta * reputationRewardFactor
             reputation_reward_factor = self.CONTRIBUTION_TYPE[contribution.contribution_type]['reputation_reward_factor']
-            reputationReward = reputation_reward_factor * rewardBase
+            reputation_reward = reputation_reward_factor * reward_base
             contributor.tokens = contributor.tokens + token_reward
-            contributor.reputation = contributor.reputation + reputationReward
+            contributor.reputation = contributor.reputation + reputation_reward
 
             if contributor.referrer:
                 contributor.referrer.tokens += token_reward * self.REFERRAL_REWARD_FRACTION
-                contributor.referrer.reputation += reputationReward * self.REFERRAL_REWARD_FRACTION
+                contributor.referrer.reputation += reputation_reward * self.REFERRAL_REWARD_FRACTION
 
     def get_evaluation(self, evaluation_id):
         if evaluation_id is None:

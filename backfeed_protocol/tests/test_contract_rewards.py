@@ -78,23 +78,23 @@ class RewardsAndFeeTest(BaseContractTestCase):
         contract.create_evaluation(contribution=contribution, user=user1, value=0)
         evaluation = contract.create_evaluation(contribution=contribution, user=user2, value=1)
 
-        self.assertEqual(contract.sum_equally_voted_reputation(evaluation), user0.reputation)
+        self.assertEqual(contract.sum_equally_voted_reputation(evaluation.contribution, value=1), user0.reputation + user2.reputation)
 
     def test_evaluation_reward(self):
         reward = self.evaluation_reward(reputation_at_stake=.2, new_reputation_at_stake=0.2)
-        self.assertAlmostEqual(reward, 0.0042, places=4)
+        self.assertAlmostEqual(reward, 0.00795, places=4)
 
         # get a BIG confirmation of 80%
         reward = self.evaluation_reward(reputation_at_stake=.2, new_reputation_at_stake=0.8)
-        self.assertAlmostEqual(reward, 0.0127, places=4)
+        self.assertAlmostEqual(reward, 0.012686, places=4)
 
         #
         reward = self.evaluation_reward(reputation_at_stake=.8, new_reputation_at_stake=0.2)
-        self.assertAlmostEqual(reward, 0.0041, places=4)
+        self.assertAlmostEqual(reward, 0.01279, places=4)
 
         # a small stake with a small confirmation
         reward = self.evaluation_reward(reputation_at_stake=.01, new_reputation_at_stake=0.01)
-        self.assertAlmostEqual(reward, 0.00002587, places=4)
+        self.assertAlmostEqual(reward, 0.0003963, places=4)
 
     #
     # tests for rewarding the contributor
@@ -114,7 +114,7 @@ class RewardsAndFeeTest(BaseContractTestCase):
         contribution = contract.create_contribution(user=contributor, contribution_type='article')
         contribution.user.tokens = 0
         evaluation = Evaluation(contract=contract, contribution=contribution, user=evaluator, value=1)
-        contract.reward_contributor(evaluation)
+        contract.reward_contributor(contribution, 1, upvoted_reputation, total_reputation)
 
         reputation_reward = evaluation.contribution.user.reputation
         token_reward = evaluation.contribution.user.tokens
@@ -198,7 +198,10 @@ class RewardsAndFeeTest(BaseContractTestCase):
         contribution = contract.create_contribution(user=contributor, contribution_type='article')
         # do not use contract.create_evaluation in the test, because that will call pay_evaluation_fee
         evaluation = Evaluation(user=evaluator, contribution=contribution, value=1)
-        contract.pay_evaluation_fee(evaluation)
+        evaluator_rep = evaluator.reputation
+        engaged_rep = contribution.engaged_reputation()
+        total_rep = contract.total_reputation()
+        contract.pay_evaluation_fee(evaluator, contribution, evaluator_rep, engaged_rep, total_rep)
         fee_payed = reputation_at_stake - evaluation.user.reputation
         return fee_payed
 
