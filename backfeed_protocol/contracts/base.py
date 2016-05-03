@@ -108,7 +108,7 @@ class BaseContract(Contract):
                 evaluator_id=user.id):
             # TODO: we should not remove the evaluation from the database
             # because it will interest us for auditing
-            contribution.evaluations.remove(previous_evaluation)
+            DBSession.delete(previous_evaluation)
 
         evaluation = Evaluation(contract=self, user=user, contribution=contribution, value=value)
 

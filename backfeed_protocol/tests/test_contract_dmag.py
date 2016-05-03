@@ -6,7 +6,7 @@ from test_contract_base import BaseContractTestCase
 class DmagTest(BaseContractTestCase):
     """test dmag protocol"""
     contract_class_to_test = DMagContract
-    contract_name = 'dmag'
+    contract_name = u'dmag'
 
     def setUp(self):
         super(DmagTest, self).setUp()

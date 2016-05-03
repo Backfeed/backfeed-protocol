@@ -14,7 +14,7 @@ class BaseContractTestCase(TestCase):
     """
 
     contract_class_to_test = BaseContract
-    contract_name = 'base'
+    contract_name = u'base'
 
     def setUp(self):
         super(BaseContractTestCase, self).setUp()

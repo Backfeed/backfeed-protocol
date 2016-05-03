@@ -18,7 +18,7 @@ class Contribution(Base):
     time = Column(DateTime, default=datetime.now())
     contribution_type = Column(Unicode(255))
     contract_id = Column(Integer, ForeignKey('contract.id'), nullable=False)
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
 
     evaluations = relationship('Evaluation', backref='contribution')
 

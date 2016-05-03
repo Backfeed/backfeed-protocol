@@ -37,7 +37,7 @@ class TestContract(DMagContract):
 class RewardsAndFeeTest(BaseContractTestCase):
     """test dmag protocol"""
     contract_class_to_test = TestContract
-    contract_name = 'test'
+    contract_name = u'test'
 
     def setUp(self):
         super(RewardsAndFeeTest, self).setUp()
@@ -112,7 +112,7 @@ class RewardsAndFeeTest(BaseContractTestCase):
         contributor = contract.create_user(reputation=0.0)
         evaluator = contract.create_user(reputation=upvoted_reputation)
         contract.create_user(reputation=total_reputation - upvoted_reputation)
-        contribution = contract.create_contribution(user=contributor, contribution_type='article')
+        contribution = contract.create_contribution(user=contributor, contribution_type=u'article')
         contribution.user.tokens = 0
         evaluation = Evaluation(contract=contract, contribution=contribution, user=evaluator, value=1)
         contract.reward_contributor(evaluation)
@@ -144,7 +144,7 @@ class RewardsAndFeeTest(BaseContractTestCase):
         evaluator2 = contract.create_user(reputation=0)
         evaluator3 = contract.create_user(reputation=0)
         extra_user = contract.create_user(reputation=0.3)
-        contribution = contract.create_contribution(user=contributor, contribution_type='article')
+        contribution = contract.create_contribution(user=contributor, contribution_type=u'article')
         contribution.user.tokens = 0
 
         # evaluator 1 upvotes the contribution with his 0.7 rep
@@ -195,7 +195,7 @@ class RewardsAndFeeTest(BaseContractTestCase):
         contract = self.get_fresh_contract()
         contributor = contract.create_user(reputation=total_reputation - reputation_at_stake)
         evaluator = contract.create_user(reputation=reputation_at_stake)
-        contribution = contract.create_contribution(user=contributor, contribution_type='article')
+        contribution = contract.create_contribution(user=contributor, contribution_type=u'article')
         # do not use contract.create_evaluation in the test, because that will call pay_evaluation_fee
         evaluation = Evaluation(user=evaluator, contribution=contribution, value=1, contract=contract)
         contract.pay_evaluation_fee(evaluation)

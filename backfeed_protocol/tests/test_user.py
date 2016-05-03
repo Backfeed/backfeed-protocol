@@ -7,7 +7,7 @@ from test_contract_base import BaseContractTestCase
 class UserTest(BaseContractTestCase):
     """test dmag protocol"""
     contract_class_to_test = DMagContract
-    contract_name = 'dmag'
+    contract_name = u'dmag'
 
     def test_get_user(self):
         user_id = self.contract.create_user().id

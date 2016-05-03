@@ -51,7 +51,7 @@ Once you have the package installed, you can use it like this:
     >>> utils.setup_database()
 
     >>> # create a contract
-    >>> contract = utils.get_contract('example')
+    >>> contract = utils.get_contract(u'example')
 
     >>> # add two users
     >>> ann  = contract.create_user(tokens=10, reputation=10)

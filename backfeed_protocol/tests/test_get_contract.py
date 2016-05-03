@@ -9,10 +9,10 @@ class GetContractTestCase(TestCase):
 
     def test_get_contract(self):
 
-        contract0 = backfeed_protocol.utils.get_contract('example')
-        contract1 = backfeed_protocol.utils.get_contract('dmag')
-        contract2 = backfeed_protocol.utils.get_contract('dmag')
-        contract3 = backfeed_protocol.utils.get_contract('example')
+        contract0 = backfeed_protocol.utils.get_contract(u'example')
+        contract1 = backfeed_protocol.utils.get_contract(u'dmag')
+        contract2 = backfeed_protocol.utils.get_contract(u'dmag')
+        contract3 = backfeed_protocol.utils.get_contract(u'example')
 
         self.assertEqual(contract0, contract3)
         self.assertEqual(contract1, contract2)
