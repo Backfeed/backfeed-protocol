@@ -37,6 +37,7 @@ class TestContract(DMagContract):
 class RewardsAndFeeTest(BaseContractTestCase):
     """test dmag protocol"""
     contract_class_to_test = TestContract
+    contract_name = 'test'
 
     def setUp(self):
         super(RewardsAndFeeTest, self).setUp()
@@ -192,12 +193,11 @@ class RewardsAndFeeTest(BaseContractTestCase):
 
         """
         contract = self.get_fresh_contract()
-
         contributor = contract.create_user(reputation=total_reputation - reputation_at_stake)
         evaluator = contract.create_user(reputation=reputation_at_stake)
         contribution = contract.create_contribution(user=contributor, contribution_type='article')
         # do not use contract.create_evaluation in the test, because that will call pay_evaluation_fee
-        evaluation = Evaluation(user=evaluator, contribution=contribution, value=1)
+        evaluation = Evaluation(user=evaluator, contribution=contribution, value=1, contract=contract)
         contract.pay_evaluation_fee(evaluation)
         fee_payed = reputation_at_stake - evaluation.user.reputation
         return fee_payed

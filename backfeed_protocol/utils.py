@@ -30,7 +30,7 @@ def reset_database():
 
 
 @with_session
-def get_contract(name='dmag', contract_id=1):
+def get_contract(name):
     """return the contract identified by name
 
     returns a Contract instance

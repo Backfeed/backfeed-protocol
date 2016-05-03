@@ -249,7 +249,7 @@ class BaseContract(Contract):
         return DBSession.query(Evaluation).get(evaluation_id)
 
     def get_evaluations(self, contribution_id=None, evaluator_id=None, value=None):
-        qry = DBSession.query(Evaluation)
+        qry = DBSession.query(Evaluation).filter(Evaluation.contract == self)
         if contribution_id:
             qry = qry.filter(Evaluation.contribution_id == contribution_id)
         if evaluator_id:
@@ -259,7 +259,7 @@ class BaseContract(Contract):
         return qry.all()
 
     def get_users(self):
-        return DBSession.query(User).all()
+        return DBSession.query(User).filter(User.contract == self).all()
 
     def get_user(self, user_id):
         return DBSession.query(User).get(user_id)
@@ -270,7 +270,7 @@ class BaseContract(Contract):
         return DBSession.query(Contribution).get(contribution_id)
 
     def get_contributions(self, start=0, limit=None, contributor_id=None, order_by='-score'):
-        query = DBSession.query(Contribution)
+        query = DBSession.query(Contribution).filter(Contribution.contract == self)
         # TODO: add 'score' as a column to the database, and do the ordering
         # from there
         # if order_by:
@@ -308,6 +308,7 @@ class BaseContract(Contract):
 
     def contributions_count(self):
         return DBSession.query(Contribution).count()
+        return DBSession.query(Contribution).filter(Contribution.contract == self).count()
 
     def total_reputation(self):
-        return DBSession.query(func.sum(User.reputation)).one()[0]
+        return DBSession.query(func.sum(User.reputation)).filter(User.contract == self).one()[0]

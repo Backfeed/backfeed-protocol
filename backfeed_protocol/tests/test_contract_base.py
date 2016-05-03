@@ -14,6 +14,7 @@ class BaseContractTestCase(TestCase):
     """
 
     contract_class_to_test = BaseContract
+    contract_name = 'base'
 
     def setUp(self):
         super(BaseContractTestCase, self).setUp()
@@ -24,7 +25,7 @@ class BaseContractTestCase(TestCase):
     def get_fresh_contract(self):
         """get a contract with default settings but without users or other data"""
         utils.reset_database()
-        contract = self.contract_class_to_test()
+        contract = self.contract_class_to_test(name=self.contract_name)
         DBSession.add(contract)
         return contract
 

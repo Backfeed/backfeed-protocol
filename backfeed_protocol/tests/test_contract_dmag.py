@@ -6,6 +6,7 @@ from test_contract_base import BaseContractTestCase
 class DmagTest(BaseContractTestCase):
     """test dmag protocol"""
     contract_class_to_test = DMagContract
+    contract_name = 'dmag'
 
     def setUp(self):
         super(DmagTest, self).setUp()
@@ -65,8 +66,8 @@ class DmagTest(BaseContractTestCase):
         self.assertEqual(user1.tokens, 50)
 
         # user2 and 3 make a contribution
-        contribution1 = contract.create_contribution(user2, contribution_type='article')
-        contribution2 = contract.create_contribution(user3, contribution_type='article')
+        contribution1 = contract.create_contribution(user2, contribution_type=u'article')
+        contribution2 = contract.create_contribution(user3, contribution_type=u'article')
 
         # a contribution has a fee of 1 token
         self.assertEqual(user2.tokens, 50 - contract.CONTRIBUTION_TYPE['article']['fee'])

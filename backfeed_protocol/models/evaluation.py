@@ -10,7 +10,7 @@ from sqlalchemy import DateTime
 class Evaluation(Base):
     __tablename__ = 'evaluation'
     id = Column(Integer, primary_key=True)
-    contract_id = Column(Integer, ForeignKey('contract.id'))
+    contract_id = Column(Integer, ForeignKey('contract.id'), nullable=False)
     contribution_id = Column(Integer, ForeignKey('contribution.id'))
     # the time that this object was added
     time = Column(DateTime, default=datetime.now())
