@@ -4,6 +4,7 @@ from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import DateTime
 from sqlalchemy import String
+from sqlalchemy import Unicode
 from sqlalchemy.orm import relationship
 
 from ..models import Base
@@ -13,6 +14,8 @@ class Contract(Base):
     __tablename__ = 'contract'
     id = Column(Integer, primary_key=True, autoincrement=True)
 
+    # the name under which this contract was registered
+    name = Column(Unicode(255), unique=True)
     # the time that this object was added
     time = Column(DateTime, default=datetime.now())
     users = relationship('User', backref='contract')

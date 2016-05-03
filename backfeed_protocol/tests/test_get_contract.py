@@ -1,5 +1,6 @@
 import backfeed_protocol
 from ..contracts.dmag import DMagContract
+from ..contracts.example import ExampleContract
 from common import TestCase
 
 
@@ -7,7 +8,13 @@ class GetContractTestCase(TestCase):
     """tests for protocol.get_contract"""
 
     def test_get_contract(self):
-        contract = backfeed_protocol.utils.get_contract()
-        self.assertTrue(isinstance(contract, DMagContract))
+
+        contract0 = backfeed_protocol.utils.get_contract('example')
+        contract1 = backfeed_protocol.utils.get_contract('dmag')
         contract2 = backfeed_protocol.utils.get_contract()
-        self.assertEqual(contract, contract2)
+        contract3 = backfeed_protocol.utils.get_contract('example')
+
+        self.assertEqual(contract0, contract3)
+        self.assertEqual(contract1, contract2)
+        self.assertTrue(isinstance(contract0, ExampleContract))
+        self.assertTrue(isinstance(contract1, DMagContract))

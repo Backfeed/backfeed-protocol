@@ -1,5 +1,6 @@
 
 from sqlalchemy import engine_from_config
+from sqlalchemy.orm.exc import NoResultFound
 
 from models import initialize_sql
 from models import DBSession
@@ -42,8 +43,10 @@ def get_contract(name='dmag', contract_id=1):
         contract_class = DMagContract
     else:
         raise ValueError('Unknown contract type: {name}'.format(name=name))
-    contract = DBSession.query(contract_class).get(contract_id)
-    if contract is None:
-        contract = contract_class()
+
+    try:
+        contract = DBSession.query(contract_class).filter(contract_class.name == name).one()
+    except NoResultFound:
+        contract = contract_class(name=name)
         DBSession.add(contract)
     return contract
