@@ -38,7 +38,7 @@ class DmagTest(BaseContractTestCase):
             u'article': {
                 'fee': 1,
                 'distribution_stake': 0.08,
-                'reputation_reward_factor': 50,
+                'reputation_reward_factor': 5,
                 'reward_threshold': 0.5,
                 'stake': 0.02,
                 'token_reward_factor': 50,
@@ -83,6 +83,19 @@ class DmagTest(BaseContractTestCase):
         }
         self.assert_user_states(expected_state)
 
+        """20   20  20  20  20  50  49  49  50  50
+        19.7788854382   20  20  20  20  50  49  49  50  50
+        19.7788854382   19.8525613977   20  20  20  50  49  49  50  50
+        20.5744385653   19.8525613977   19.9094563837   20  20  50  49  49  50  50
+        20.5744385653   19.8525613977   19.9094563837   19.7785852598   20  50  49  49  50  50
+        20.5744385653   19.8525613977   19.9094563837   19.7785852598   19.8521360773   50  49  49  50  50
+        20.4822845066   19.8525613977   19.9094563837   20.5853318156   19.8521360773   50  49  49  50  50
+        21.0222536593   22.7544628224   20.4343242172   20.5853318156   19.8521360773   50  78.9181779282   49  50  50
+        21.0222536593   22.7544628224   20.3457693792   20.5853318156   19.8521360773   50  78.9181779282   49  50  50
+        21.5601483702   23.4226197071   20.3457693792   20.5441923339   19.8521360773   50  79.7775807021   49  50  50
+        22.1128137528   23.4226197071   23.2758500312   21.070815051    19.7590362707   50  79.7775807021   78.3008065193   50  50
+        """
+
         # step 1: user1 evaluations the first contribution
         contract.create_evaluation(user=user1, contribution=contribution1, value=1)
 
@@ -92,8 +105,9 @@ class DmagTest(BaseContractTestCase):
         self.assertEqual(user1.tokens, 50)
         # while the repuation of the othe users remains unchanged
         self.assertEqual(user2.reputation, 20)
+
         expected_state = {
-            user1: {"reputation": 19.7788854382, "tokens": 50},
+            user1: {"reputation": 19.778885, "tokens": 50},
             user2: {"reputation": 20, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
             user3: {"reputation": 20, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
             user4: {"reputation": 20, "tokens": 50},
@@ -105,8 +119,8 @@ class DmagTest(BaseContractTestCase):
         contract.create_evaluation(user=user2, contribution=contribution1, value=0)
 
         expected_state = {
-            user1: {"reputation": 19.7789, "tokens": 50},
-            user2: {"reputation": 19.8526, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
+            user1: {"reputation": 19.778885, "tokens": 50},
+            user2: {"reputation": 19.852561, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
             user3: {"reputation": 20, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
             user4: {"reputation": 20, "tokens": 50},
             user5: {"reputation": 20, "tokens": 50}
@@ -115,21 +129,22 @@ class DmagTest(BaseContractTestCase):
 
         # step 3:
         contract.create_evaluation(user=user3, contribution=contribution1, value=1)
-        # 3   P3 evaluates C1 by 1    20.1972 19.8526 19.9095 20  20  99.9593 50  49  49  50  50  248
         expected_state = {
-            user1: {"reputation": 20.1972, "tokens": 50},
-            user2: {"reputation": 19.8526, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
-            user3: {"reputation": 19.9094, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
+            user1: {"reputation": 20.5744385, "tokens": 50},
+            user2: {"reputation": 19.8525613, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
+            user3: {"reputation": 19.9094563, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
             user4: {"reputation": 20, "tokens": 50},
             user5: {"reputation": 20, "tokens": 50}
         }
         self.assert_user_states(expected_state)
+
+        # step 4
         contract.create_evaluation(user=user4, contribution=contribution2, value=1)
         expected_state = {
-            user1: {"reputation": 20.1972, "tokens": 50},
-            user2: {"reputation": 19.8525, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
-            user3: {"reputation": 19.9095, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
-            user4: {"reputation": 19.7789, "tokens": 50},
+            user1: {"reputation": 20.5744385, "tokens": 50},
+            user2: {"reputation": 19.8525613, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
+            user3: {"reputation": 19.9094563, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
+            user4: {"reputation": 19.7785852, "tokens": 50},
             user5: {"reputation": 20, "tokens": 50}
         }
         self.assert_user_states(expected_state)
@@ -137,73 +152,70 @@ class DmagTest(BaseContractTestCase):
         # step 5
         contract.create_evaluation(user=user5, contribution=contribution2, value=0)
         expected_state = {
-            user1: {"reputation": 20.1972, "tokens": 50},
-            user2: {"reputation": 19.8525, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
-            user3: {"reputation": 19.9094, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
-            user4: {"reputation": 19.7789, "tokens": 50},
-            user5: {"reputation": 19.8526, "tokens": 50}
+            user1: {"reputation": 20.5744385, "tokens": 50},
+            user2: {"reputation": 19.8525613, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
+            user3: {"reputation": 19.9094563, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
+            user4: {"reputation": 19.7785852, "tokens": 50},
+            user5: {"reputation": 19.8521360, "tokens": 50}
         }
         self.assert_user_states(expected_state)
 
         # step 6
         contract.create_evaluation(user=user1, contribution=contribution2, value=1)
-        # 6 P1 evaluates C2 by 1    20.1064 19.8526 19.9095 20.2009 19.8526 99.9219 50  49  49  50  50  248
         expected_state = {
-            user1: {"reputation": 20.1064, "tokens": 50},
-            user2: {"reputation": 19.8526, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
-            user3: {"reputation": 19.9095, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
-            user4: {"reputation": 20.2009, "tokens": 50},
-            user5: {"reputation": 19.8526, "tokens": 50}
+            user1: {"reputation": 20.4822845, "tokens": 50},
+            user2: {"reputation": 19.8525613, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
+            user3: {"reputation": 19.9094563, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
+            user4: {"reputation": 20.5853318, "tokens": 50},
+            user5: {"reputation": 19.8521360, "tokens": 50}
         }
         self.assert_user_states(expected_state)
-
-        # TODO: make it so that also the next tests run
-        return
 
         # step 7
         contract.create_evaluation(user=user2, contribution=contribution1, value=1)
         expected_state = {
-            user1: {"reputation": 20.4791, "tokens": 50},
-            # TODO: these are the simulation results
-            # user2: {"reputation": 22.7586, "tokens": 78.9576},
-            user2: {"reputation": 22.8612, "tokens": 79.08672},
-            user3: {"reputation": 20.2785, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
-            user4: {"reputation": 20.2009, "tokens": 50},
-            user5: {"reputation": 19.8526, "tokens": 50}
+            user1: {"reputation": 21.0222536, "tokens": 50},
+            user2: {"reputation": 22.7544628, "tokens": 78.9181779},
+            user3: {"reputation": 20.4343242, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
+            user4: {"reputation": 20.5853318, "tokens": 50},
+            user5: {"reputation": 19.8521360, "tokens": 50}
         }
         self.assert_user_states(expected_state)
 
         # step 8
-        # 8 P3 evaluates C1 by 0    20.4791 22.7586 20.1905 20.2009 19.8526 103.4817    50  78.9576 49  50  50  277.95759   P3 already voted. Vote changed.
+
         contract.create_evaluation(user=user3, contribution=contribution1, value=0)
         expected_state = {
-            user1: {"reputation": 20.4791, "tokens": 50},
-            user2: {"reputation": 22.7586, "tokens": 78.9576},
-            user3: {"reputation": 20.1905, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
-            user4: {"reputation": 20.2009, "tokens": 50},
-            user5: {"reputation": 19.8526, "tokens": 50}
+            user1: {"reputation": 21.0222536, "tokens": 50},
+            user2: {"reputation": 22.7544628, "tokens": 78.9181779},
+            user3: {"reputation": 20.3457693, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
+            user4: {"reputation": 20.5853318, "tokens": 50},
+            user5: {"reputation": 19.8521360, "tokens": 50}
         }
         self.assert_user_states(expected_state)
 
         # step 9
-        contract.create_evaluation(user=user5, contribution=contribution2, value=0)
+
+        contract.create_evaluation(user=user4, contribution=contribution1, value=1)
         expected_state = {
-            user1: {"reputation": 20.1972438528, "tokens": 50},
-            user2: {"reputation": 19.8525613977, "tokens": 78.9576},
-            user3: {"reputation": 19.9094563837, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
-            user4: {"reputation": 19.7789218868, "tokens": 50},
-            user5: {"reputation": 19.8526, "tokens": 50}
+            user1: {"reputation": 21.5601483, "tokens": 50},
+            user2: {"reputation": 23.4226197, "tokens": 79.7775807},
+            user3: {"reputation": 20.3457693, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
+            user4: {"reputation": 20.5441923, "tokens": 50},
+            user5: {"reputation": 19.8521360, "tokens": 50}
         }
         self.assert_user_states(expected_state)
 
         # step 10
-        contract.create_evaluation(user=user5, contribution=contribution2, value=0)
+        # 22.1128137528 23.4226197071   23.2758500312   21.070815051    19.7590362707   50  79.7775807021   78.3008065193
+
+        contract.create_evaluation(user=user5, contribution=contribution2, value=1)
         expected_state = {
-            user1: {"reputation": 20.1972438528, "tokens": 50},
-            user2: {"reputation": 19.8525613977, "tokens": 78.9576},
-            user3: {"reputation": 19.9094563837, "tokens": 50 - contract.CONTRIBUTION_TYPE['article']['fee']},
-            user4: {"reputation": 19.7789218868, "tokens": 50},
-            user5: {"reputation": 19.8526130418, "tokens": 50}
+            user1: {"reputation": 22.1128137, "tokens": 50},
+            user2: {"reputation": 23.4226197, "tokens": 79.7775807},
+            user3: {"reputation": 23.2758500, "tokens": 78.3008065},
+            user4: {"reputation": 21.070815, "tokens": 50},
+            user5: {"reputation": 19.7590362, "tokens": 50}
         }
         self.assert_user_states(expected_state)
 
@@ -215,5 +227,5 @@ class DmagTest(BaseContractTestCase):
             user = self.contract.get_user(user_id=user.id)
             # self.assertTrue(user)
             # TODO: these tests are only precise in 2 decimals...
-            self.assertAlmostEqual(user.reputation, state_description[user]['reputation'], places=2)
+            self.assertAlmostEqual(user.reputation, state_description[user]['reputation'], places=3)
             self.assertAlmostEqual(user.tokens, state_description[user]['tokens'], places=2)

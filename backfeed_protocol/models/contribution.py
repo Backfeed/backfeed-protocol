@@ -38,6 +38,10 @@ class Contribution(Base):
         else:
             return 0
 
+    def get_voted_rep_by_value(self, value):
+        voted_rep = sum(evaluation.user.reputation for evaluation in self.contract.get_evaluations(value=value, contribution_id=self.id))
+        return voted_rep
+
     def get_statistics(self):
         """return information about evaluations, repuation engaged, etc"""
         evaluation_stats = {}
