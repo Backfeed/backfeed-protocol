@@ -1,4 +1,4 @@
-Backfeed Protocols  
+Backfeed Protocols
 [![Build Status](https://travis-ci.org/Backfeed/backfeed-protocol.svg?branch=master)](https://travis-ci.org/Backfeed/backfeed-protocol)
 --------------------------------
 
@@ -74,9 +74,9 @@ Once you have the package installed, you can use it like this:
     99.90692517849118
     >>> # because bonnie represents the majority, ann will get a reward
     >>> ann.tokens
-    54.45069613049415
+    54.45454545454545
     >>> ann.reputation
-    14.545069613049415
+    14.545454545454545
 
 ## Contributing
 
