@@ -7,8 +7,8 @@ class DMagContract(BaseContract):
     }
     USER_INITIAL_TOKENS = 50.0
     USER_INITIAL_REPUTATION = 0
-    ALPHA = 0
     BETA = 0.6
+    REWARD_TOKENS_TO_EVALUATORS = True
     CONTRIBUTION_TYPE = {
         u'article': {
             'fee': 1,

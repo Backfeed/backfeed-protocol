@@ -30,6 +30,7 @@ class DmagTest(BaseContractTestCase):
     def test_results_of_R_simulation(self):
         """test if our results match the R simulation"""
         contract = self.contract
+        contract.REWARD_TOKENS_TO_EVALUATORS = False
         contract.USER_INITIAL_TOKENS = 50.0
         contract.USER_INITIAL_REPUTATION = 20
         contract.ALPHA = 0.7
