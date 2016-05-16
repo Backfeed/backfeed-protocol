@@ -40,6 +40,8 @@ class EvaluationTest(BaseContractTestCase):
     def test_token_rewards_for_evaluators(self):
         contract = self.get_fresh_contract()
         contract.REWARD_TOKENS_TO_EVALUATORS = True
+        for k in contract.CONTRIBUTION_TYPE:
+            contract.CONTRIBUTION_TYPE[k]['reward_threshold'] = 0.5
 
         user0 = contract.create_user(reputation=3.141)
         user1 = contract.create_user(reputation=3.141)
@@ -93,6 +95,8 @@ class EvaluationTest(BaseContractTestCase):
 
     def test_vote_changing_attack1(self):
         contract = self.contract
+        for k in contract.CONTRIBUTION_TYPE:
+            contract.CONTRIBUTION_TYPE[k]['reward_threshold'] = 0.5
 
         user0 = contract.create_user(tokens=10, reputation=10)
         user1 = contract.create_user(tokens=10, reputation=10)
@@ -122,6 +126,8 @@ class EvaluationTest(BaseContractTestCase):
 
     def test_vote_changing_score_attack2(self):
         contract = self.contract
+        for k in contract.CONTRIBUTION_TYPE:
+            contract.CONTRIBUTION_TYPE[k]['reward_threshold'] = 0.5
 
         user0 = contract.create_user(tokens=10, reputation=10)
         user1 = contract.create_user(tokens=10, reputation=10)
