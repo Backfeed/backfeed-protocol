@@ -195,18 +195,23 @@ class BaseContract(Contract):
         return equally_voted_rep
 
     def contribution_score(self, contribution):
+        quality = self.contribution_quality(contribution)
+        time_added = contribution.time
+        time_delta = datetime.now() - time_added
+        score = quality * (0.1 + 27 / (30 + time_delta.days))
+        return score
+
+    def contribution_quality(self, contribution):
         total_reputation = self.total_reputation()
         if total_reputation:
             upvotes = contribution.get_voted_rep_by_value(1)
             upvotes = upvotes / total_reputation
             downvotes = contribution.get_voted_rep_by_value(0)
             downvotes = downvotes / total_reputation
-            time_added = contribution.time
-            time_delta = datetime.now() - time_added
-            score = (1.0 - downvotes) * upvotes * (0.1 + 27 / (30 + time_delta.days))
+            quality = (1.0 - downvotes) * upvotes
         else:
-            score = 0
-        return score
+            quality = 0
+        return quality
 
     def reward_contributor(self, contribution, value, up_voted_rep, total_rep):
         # don't reward anything if the value is 0/
@@ -242,7 +247,13 @@ class BaseContract(Contract):
             raise ValueError("evaluation_id cannot be None")
         return DBSession.query(Evaluation).get(evaluation_id)
 
-    def get_evaluations(self, contribution_id=None, evaluator_id=None, value=None):
+    def get_evaluations(self, **kwargs):
+        return self._get_evaluation_query(**kwargs).all()
+
+    def get_evaluations_count(self, **kwargs):
+        return self._get_evaluation_query(**kwargs).count()
+
+    def _get_evaluation_query(self, contribution_id=None, evaluator_id=None, value=None):
         qry = DBSession.query(Evaluation).filter(Evaluation.contract == self)
         if contribution_id:
             qry = qry.filter(Evaluation.contribution_id == contribution_id)
@@ -250,10 +261,13 @@ class BaseContract(Contract):
             qry = qry.filter(Evaluation.user_id == evaluator_id)
         if value is not None:
             qry = qry.filter(Evaluation.value == value)
-        return qry.all()
+        return qry
 
     def get_users(self):
         return DBSession.query(User).filter(User.contract == self).all()
+
+    def get_users_count(self):
+        return DBSession.query(User).filter(User.contract == self).count()
 
     def get_user(self, user_id):
         return DBSession.query(User).get(user_id)
