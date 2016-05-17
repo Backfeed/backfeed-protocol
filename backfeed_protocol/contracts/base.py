@@ -33,6 +33,7 @@ class BaseContract(Contract):
             'token_reward_factor': 50,
             # the allowed values for votes:
             'evaluation_set': [0, 1],
+            'token_fund_for_evaluators': 10
         }
     }
 
@@ -85,7 +86,7 @@ class BaseContract(Contract):
             raise Exception(msg)
         user.tokens = user.tokens - self.CONTRIBUTION_TYPE[contribution_type]['fee']
 
-        new_contribution = Contribution(contract=self, user=user, contribution_type=contribution_type, token_fund=self.CONTRIBUTION_TYPE[contribution_type]['fee'])
+        new_contribution = Contribution(contract=self, user=user, contribution_type=contribution_type, token_fund=self.CONTRIBUTION_TYPE[contribution_type]['token_fund_for_evaluators'])
         return new_contribution
 
     def is_evaluation_value_allowed(self, value, contribution_type='base'):

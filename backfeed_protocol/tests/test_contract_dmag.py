@@ -44,6 +44,7 @@ class DmagTest(BaseContractTestCase):
                 'stake': 0.02,
                 'token_reward_factor': 50,
                 'evaluation_set': [0, 1],
+                'token_fund_for_evaluators': 1
             },
             u'comment': {
                 'fee': 0.1,
@@ -53,6 +54,7 @@ class DmagTest(BaseContractTestCase):
                 'stake': 0.005,
                 'token_reward_factor': 10,
                 'evaluation_set': [0, 1],
+                'token_fund_for_evaluators': 1
             }
         }
         # add some users and contributions
