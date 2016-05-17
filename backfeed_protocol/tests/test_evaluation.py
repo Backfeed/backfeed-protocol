@@ -51,17 +51,17 @@ class EvaluationTest(BaseContractTestCase):
 
         contribution0 = contract.create_contribution(user=user0)
         contract.create_evaluation(user1, contribution0, value=1)
-        self.assertEqual(user1.tokens, contract.USER_INITIAL_TOKENS + 0.2 * contract.CONTRIBUTION_TYPE[contribution0.contribution_type]['fee'])
+        self.assertEqual(user1.tokens, contract.USER_INITIAL_TOKENS + 0.2 * contract.CONTRIBUTION_TYPE[contribution0.contribution_type]['token_fund_for_evaluators'])
         contract.create_evaluation(user2, contribution0, value=0)
-        self.assertEqual(user2.tokens, contract.USER_INITIAL_TOKENS + 0.2 * contract.CONTRIBUTION_TYPE[contribution0.contribution_type]['fee'])
+        self.assertEqual(user2.tokens, contract.USER_INITIAL_TOKENS + 0.2 * contract.CONTRIBUTION_TYPE[contribution0.contribution_type]['token_fund_for_evaluators'])
         contract.create_evaluation(user3, contribution0, value=1)
-        self.assertEqual(user3.tokens, contract.USER_INITIAL_TOKENS + 0.2 * contract.CONTRIBUTION_TYPE[contribution0.contribution_type]['fee'])
+        self.assertEqual(user3.tokens, contract.USER_INITIAL_TOKENS + 0.2 * contract.CONTRIBUTION_TYPE[contribution0.contribution_type]['token_fund_for_evaluators'])
         contract.create_evaluation(user4, contribution0, value=0)
-        self.assertEqual(user4.tokens, contract.USER_INITIAL_TOKENS + 0.2 * contract.CONTRIBUTION_TYPE[contribution0.contribution_type]['fee'])
+        self.assertEqual(user4.tokens, contract.USER_INITIAL_TOKENS + 0.2 * contract.CONTRIBUTION_TYPE[contribution0.contribution_type]['token_fund_for_evaluators'])
 
         # check token balance unchanged when voting again
         contract.create_evaluation(user1, contribution0, value=0)
-        self.assertEqual(user1.tokens, contract.USER_INITIAL_TOKENS + 0.2 * contract.CONTRIBUTION_TYPE[contribution0.contribution_type]['fee'])
+        self.assertEqual(user1.tokens, contract.USER_INITIAL_TOKENS + 0.2 * contract.CONTRIBUTION_TYPE[contribution0.contribution_type]['token_fund_for_evaluators'])
 
     def test_vote_changing_fee(self):
         # we compare two scenarios: a user changes her vote up-down-up

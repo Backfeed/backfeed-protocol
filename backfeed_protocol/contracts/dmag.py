@@ -18,6 +18,7 @@ class DMagContract(BaseContract):
             'stake': 0.02,
             'token_reward_factor': 20,
             'evaluation_set': [0, 1],
+            'token_fund_for_evaluators': 10
         },
         u'comment': {
             'fee': 0.2,
@@ -27,5 +28,6 @@ class DMagContract(BaseContract):
             'stake': 0.003,
             'token_reward_factor': 5,
             'evaluation_set': [0, 1],
+            'token_fund_for_evaluators': 2
         }
     }
