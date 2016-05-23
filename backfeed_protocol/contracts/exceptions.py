@@ -1,0 +1,3 @@
+
+class InvalidContributionTypeError(KeyError):
+    pass

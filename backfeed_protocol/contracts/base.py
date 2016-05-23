@@ -8,6 +8,7 @@ from ..models.evaluation import Evaluation
 from ..models.contract import Contract
 from ..models import DBSession
 from ..models import with_session
+from exceptions import InvalidContributionTypeError
 
 
 class BaseContract(Contract):
@@ -78,7 +79,7 @@ class BaseContract(Contract):
 
         if contribution_type not in self.CONTRIBUTION_TYPE:
             msg = 'contribution_type "{contribution_type}" is not valid'.format(contribution_type=contribution_type)
-            raise KeyError(msg)
+            raise InvalidContributionTypeError(msg)
 
         # the user pays the fee for the contribution
         if user.tokens < self.CONTRIBUTION_TYPE[contribution_type]['fee']:
@@ -277,7 +278,14 @@ class BaseContract(Contract):
             raise ValueError("contribution_id cannot be None")
         return DBSession.query(Contribution).get(contribution_id)
 
-    def get_contributions(self, start=0, limit=None, contributor_id=None, order_by='-score'):
+    def get_contributions(
+        self,
+        start=0,
+        limit=None,
+        contributor_id=None,
+        contribution_type=None,
+        order_by='-score',
+    ):
         query = DBSession.query(Contribution).filter(Contribution.contract == self)
         # TODO: add 'score' as a column to the database, and do the ordering
         # from there
@@ -287,6 +295,10 @@ class BaseContract(Contract):
         #     query = query.limit(limit)
         # if start:
         #     query = query.start(start)
+
+        if contribution_type:
+            query = query.filter(Contribution.contribution_type == contribution_type)
+
         if order_by == 'score':
             results = query.all()
 
@@ -314,9 +326,11 @@ class BaseContract(Contract):
             results = results[:limit]
         return results
 
-    def contributions_count(self):
-        return DBSession.query(Contribution).count()
-        return DBSession.query(Contribution).filter(Contribution.contract == self).count()
+    def contributions_count(self, contribution_type=None, **kwargs):
+        query = DBSession.query(Contribution).filter(Contribution.contract == self)
+        if contribution_type:
+            query = query.filter(Contribution.contribution_type == contribution_type)
+        return query.count()
 
     def total_reputation(self):
         return DBSession.query(func.sum(User.reputation)).filter(User.contract == self).one()[0]

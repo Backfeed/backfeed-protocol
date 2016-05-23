@@ -9,6 +9,24 @@ class ContributionTest(BaseContractTestCase):
     contract_class_to_test = DMagContract
     contract_name = u'dmag'
 
+    def test_get_contribution(self):
+        user = self.contract.create_user(reputation=3.141)
+        contribution = self.contract.create_contribution(user=user)
+        contribution_id = contribution.id
+        contribution = self.contract.get_contribution(contribution_id=contribution_id)
+
+        self.assertEqual(contribution.id, contribution_id)
+        self.assertEqual(contribution.user, user)
+        self.assertTrue(isinstance(contribution.time, datetime))
+
+    def test_get_contributions(self):
+        user = self.contract.create_user()
+        contribution1 = self.contract.create_contribution(user=user)
+        contribution2 = self.contract.create_contribution(user=user, contribution_type=u'comment')
+
+        self.assertEqual(self.contract.get_contributions(), [contribution1, contribution2])
+        self.assertEqual(self.contract.get_contributions(contribution_type=u'comment'), [contribution2])
+
     def test_contribution_statistics(self):
         # set up an interesting situation
         self.get_contract_with_data()
@@ -22,16 +40,6 @@ class ContributionTest(BaseContractTestCase):
         contract = self.contract
         user = contract.create_user()
         self.assertRaises(KeyError, contract.create_contribution, user, contribution_type='spam')
-
-    def test_get_contribution(self):
-        user = self.contract.create_user(reputation=3.141)
-        contribution = self.contract.create_contribution(user=user)
-        contribution_id = contribution.id
-        contribution = self.contract.get_contribution(contribution_id=contribution_id)
-
-        self.assertEqual(contribution.id, contribution_id)
-        self.assertEqual(contribution.user, user)
-        self.assertTrue(isinstance(contribution.time, datetime))
 
     def test_contribution_score(self):
         contract = self.get_contract_with_data()
