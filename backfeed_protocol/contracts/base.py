@@ -112,15 +112,19 @@ class BaseContract(Contract):
             DBSession.delete(previous_evaluation)
 
         evaluation = Evaluation(contract=self, user=user, contribution=contribution, value=value)
+        self.reward_evaluators(evaluation, previously_voted=previously_voted)
+        return evaluation
 
+    def reward_evaluators(self, evaluation, previously_voted=False):
         # reward evaluator with tokens according to his reputation.
         if self.REWARD_TOKENS_TO_EVALUATORS:
             if not previously_voted:
                 self.reward_evaluator_with_tokens(evaluation)
 
         # caculate the relevant quantities before making changes to DB.
-
-        evaluator = user
+        contribution = evaluation.contribution
+        evaluator = evaluation.user
+        value = evaluation.value
         evaluator_rep = evaluator.reputation
         engaged_rep = contribution.engaged_reputation()  # includes evaluator rep.
         equally_voted_rep = contribution.get_voted_rep_by_value(value)  # includes evaluator rep.
