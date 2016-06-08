@@ -87,7 +87,11 @@ class BaseContract(Contract):
             raise Exception(msg)
         user.tokens = user.tokens - self.CONTRIBUTION_TYPE[contribution_type]['fee']
 
-        new_contribution = Contribution(contract=self, user=user, contribution_type=contribution_type, token_fund=self.CONTRIBUTION_TYPE[contribution_type]['token_fund_for_evaluators'])
+        new_contribution = Contribution(
+            contract=self,
+            user=user,
+            contribution_type=contribution_type,
+            token_fund=self.CONTRIBUTION_TYPE[contribution_type].get('token_fund_for_evaluators', 0))
         return new_contribution
 
     def is_evaluation_value_allowed(self, value, contribution_type='base'):
