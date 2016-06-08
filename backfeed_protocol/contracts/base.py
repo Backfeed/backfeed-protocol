@@ -256,8 +256,8 @@ class BaseContract(Contract):
             raise ValueError("evaluation_id cannot be None")
         return DBSession.query(Evaluation).get(evaluation_id)
 
-    def get_evaluations(self, **kwargs):
-        return self._get_evaluation_query(**kwargs).all()
+    def get_evaluations(self, contribution_id=None, evaluator_id=None, value=None):
+        return self._get_evaluation_query(contribution_id, evaluator_id, value).all()
 
     def get_evaluations_count(self, **kwargs):
         return self._get_evaluation_query(**kwargs).count()

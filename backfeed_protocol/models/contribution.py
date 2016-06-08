@@ -26,9 +26,10 @@ class Contribution(Base):
 
     token_fund = Column(Float)
 
-    def engaged_reputation(self):
+    def engaged_reputation(self, value=None):
         """return the total amount of reputation of users that have voted for this contribution"""
-        return sum([evaluation.user.reputation for evaluation in self.contract.get_evaluations(contribution_id=self.id)])
+
+        return sum([evaluation.user.reputation for evaluation in self.contract.get_evaluations(contribution_id=self.id, value=value)])
 
     def engaged_reputation_normal(self):
         engaged_reputation = self.engaged_reputation()
