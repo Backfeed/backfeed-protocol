@@ -15,7 +15,7 @@ class WhitePaper1Contract(BaseContract):
     CONTRIBUTION_TYPE = {
         u'contribution': {
             'fee': 1,
-            'reputation_reward_factor': .02,
+            'reputation_reward_factor': .002,
             'evaluation_set': [True, False],
         },
     }
@@ -41,7 +41,8 @@ class WhitePaper1Contract(BaseContract):
         if not rep_to_be_distributed:
             # there is nothing to be distributed
             return evaluation
-        # TODO: this is highly ineffecient
+
+        # TODO: the following is highly ineffecient
         for user in self.users:
             evaluations = self.get_evaluations(evaluator_id=user.id, contribution_id=evaluation.contribution.id)
             user_evaluation = evaluations and evaluations[0] or None

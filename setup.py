@@ -1,5 +1,4 @@
 from setuptools import setup, find_packages
-
 requires = [
     'sqlalchemy',
 ]
@@ -18,4 +17,5 @@ setup(
     zip_safe=False,
     test_suite='backfeed_protocol',
     tests_require=requires,
+    entry_points={"console_scripts": ["bfsim = backfeed_protocol.simulations.script:main", ]},
 )
