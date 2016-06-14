@@ -78,6 +78,20 @@ Once you have the package installed, you can use it like this:
     >>> ann.reputation
     14.545454545454545
 
+## Simulations
+
+Simulations are scenarios that define a number of users and steps. When run, they write some information to stdout and to a csv file for later analysis.
+
+To list the defined scenarios:
+
+    $ bfsim -l
+
+Now you can run a particular scenario using:
+
+    $ bfsim whitepaper1
+
+
+
 ## Contributing
 
 See [../CONTRIBUTING.md](CONTRIBUTING.md)

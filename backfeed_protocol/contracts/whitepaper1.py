@@ -15,7 +15,7 @@ class WhitePaper1Contract(BaseContract):
     CONTRIBUTION_TYPE = {
         u'contribution': {
             'fee': 1,
-            'reputation_reward_factor': .002,
+            'reputation_reward_factor': .001,
             'evaluation_set': [True, False],
         },
     }
